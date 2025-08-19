@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { LoginRequest, LoginResponse, User } from "@shared/api";
+import { supabaseServer } from "../lib/supabase";
 
 // Mock users database - in production, this would be a real database
 const users: User[] = [
@@ -21,7 +22,7 @@ const users: User[] = [
   },
 ];
 
-export const handleLogin: RequestHandler = (req, res) => {
+export const handleLogin: RequestHandler = async (req, res) => {
   try {
     const { userId, password }: LoginRequest = req.body;
 
@@ -31,20 +32,42 @@ export const handleLogin: RequestHandler = (req, res) => {
         .json({ error: "User ID and password are required" });
     }
 
-    const user = users.find((u) => u.id === userId && u.password === password);
+    // If Supabase is configured, use it for auth
+    if (supabaseServer) {
+      // Here we treat userId as email for Supabase email sign-in
+      const { data, error } = await supabaseServer.auth.signInWithPassword({
+        email: userId,
+        password,
+      });
+      if (error || !data.session || !data.user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
 
+      const user: User = {
+        id: data.user.id,
+        name: data.user.email ?? data.user.id,
+        role: "member",
+        createdAt: new Date(data.user.created_at ?? Date.now()),
+        updatedAt: new Date(),
+      };
+
+      const response: LoginResponse = {
+        user,
+        token: data.session.access_token,
+      };
+      return res.json(response);
+    }
+
+    // Fallback to mock users (no Supabase configured)
+    const user = users.find((u) => u.id === userId && u.password === password);
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-
-    // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
-
     const response: LoginResponse = {
       user: userWithoutPassword,
-      token: `mock-jwt-token-${user.id}`, // In production, generate real JWT
+      token: `mock-jwt-token-${user.id}`,
     };
-
     res.json(response);
   } catch (error) {
     console.error("Login error:", error);

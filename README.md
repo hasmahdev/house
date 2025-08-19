@@ -131,6 +131,7 @@ NODE_ENV=production
 #### 6. Deployment Considerations
 
 - **Database hosting**: Railway, Supabase, or managed PostgreSQL
+  - If using Supabase, set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in server env, and `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` in client env.
 - **App hosting**: Vercel, Netlify, or Railway
 - **Environment security**: Proper secret management
 - **HTTPS**: SSL certificate for production

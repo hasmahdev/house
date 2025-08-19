@@ -3,12 +3,18 @@ import "dotenv/config";
 import * as express from "express";
 import express__default from "express";
 import cors from "cors";
+import { createClient } from "@supabase/supabase-js";
 const handleDemo = (req, res) => {
   const response = {
     message: "Hello from Express server"
   };
   res.status(200).json(response);
 };
+const supabaseUrl = process.env.SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseServer = supabaseUrl && serviceRoleKey ? createClient(supabaseUrl, serviceRoleKey, {
+  auth: { autoRefreshToken: false, persistSession: false }
+}) : null;
 const users = [
   {
     id: "1",
@@ -29,11 +35,32 @@ const users = [
     updatedAt: /* @__PURE__ */ new Date()
   }
 ];
-const handleLogin = (req, res) => {
+const handleLogin = async (req, res) => {
   try {
     const { userId, password } = req.body;
     if (!userId || !password) {
       return res.status(400).json({ error: "User ID and password are required" });
+    }
+    if (supabaseServer) {
+      const { data, error } = await supabaseServer.auth.signInWithPassword({
+        email: userId,
+        password
+      });
+      if (error || !data.session || !data.user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      const user2 = {
+        id: data.user.id,
+        name: data.user.email ?? data.user.id,
+        role: "member",
+        createdAt: new Date(data.user.created_at ?? Date.now()),
+        updatedAt: /* @__PURE__ */ new Date()
+      };
+      const response2 = {
+        user: user2,
+        token: data.session.access_token
+      };
+      return res.json(response2);
     }
     const user = users.find((u) => u.id === userId && u.password === password);
     if (!user) {
@@ -43,7 +70,6 @@ const handleLogin = (req, res) => {
     const response = {
       user: userWithoutPassword,
       token: `mock-jwt-token-${user.id}`
-      // In production, generate real JWT
     };
     res.json(response);
   } catch (error) {
