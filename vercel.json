@@ -8,7 +8,7 @@
     { "src": "/api/(.*)", "dest": "/api/[...path]" },
     { "src": "/(.*)", "dest": "/dist/spa/index.html" }
   ],
-  "ignoreCommand": "pnpm install --prefer-offline --frozen-lockfile",
+  "buildCommand": "pnpm run build",
   "env": {
     "NODE_ENV": "production"
   }
