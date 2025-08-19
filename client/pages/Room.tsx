@@ -1,0 +1,586 @@
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useAuth } from "@/hooks/use-auth";
+import DashboardLayout from "@/components/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Plus,
+  ArrowRight,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Users,
+  Home,
+} from "lucide-react";
+import { Room as RoomType, Section, Mission, User } from "@shared/api";
+
+export default function Room() {
+  const { roomId } = useParams<{ roomId: string }>();
+  const { user } = useAuth();
+  const [room, setRoom] = useState<RoomType | null>(null);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [missions, setMissions] = useState<Mission[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false);
+  const [isCreateMissionOpen, setIsCreateMissionOpen] = useState(false);
+  const [selectedSectionId, setSelectedSectionId] = useState<string>("");
+  const [newSection, setNewSection] = useState({ name: "", description: "" });
+  const [newMission, setNewMission] = useState({
+    title: "",
+    description: "",
+    sectionId: "",
+    assignedToUserId: "",
+    priority: "medium" as "low" | "medium" | "high",
+  });
+
+  // Mock data - in production, these would be API calls
+  useEffect(() => {
+    // Mock room data
+    setRoom({
+      id: roomId || "1",
+      name: "المطبخ",
+      description: "منطقة الطبخ وتناول الطعام الرئيسية",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    setSections([
+      {
+        id: "1",
+        name: "الكاونترات",
+        description: "أسطح المطبخ",
+        roomId: roomId || "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "2",
+        name: "الأجهزة",
+        description: "أجهزة المطبخ",
+        roomId: roomId || "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "3",
+        name: "الحوض والأطباق",
+        description: "منطقة الحوض وغسل الأطباق",
+        roomId: roomId || "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]);
+
+    setMissions([
+      {
+        id: "1",
+        title: "تنظيف كاونترات المطبخ",
+        description: "مسح جميع الأسطح والأجهزة",
+        sectionId: "1",
+        assignedToUserId: "2",
+        status: "pending",
+        priority: "high",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "2",
+        title: "تحميل غسالة الأطباق",
+        description: "وضع الأطباق المتسخة وتشغيل الدورة",
+        sectionId: "3",
+        assignedToUserId: "2",
+        status: "in_progress",
+        priority: "medium",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "3",
+        title: "تنظيف الميكروويف",
+        description: "تنظيف الجهة الداخلية والخارجية للميكروويف",
+        sectionId: "2",
+        assignedToUserId: "3",
+        status: "completed",
+        priority: "low",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]);
+
+    setUsers([
+      {
+        id: "2",
+        name: "عضو العائلة",
+        role: "member",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "3",
+        name: "أحمد محمد",
+        role: "member",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]);
+  }, [roomId]);
+
+  const handleCreateSection = async () => {
+    const section: Section = {
+      id: Date.now().toString(),
+      name: newSection.name,
+      description: newSection.description,
+      roomId: roomId || "1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    setSections([...sections, section]);
+    setNewSection({ name: "", description: "" });
+    setIsCreateSectionOpen(false);
+  };
+
+  const handleCreateMission = async () => {
+    const mission: Mission = {
+      id: Date.now().toString(),
+      title: newMission.title,
+      description: newMission.description,
+      sectionId: newMission.sectionId,
+      assignedToUserId: newMission.assignedToUserId,
+      status: "pending",
+      priority: newMission.priority,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    setMissions([...missions, mission]);
+    setNewMission({
+      title: "",
+      description: "",
+      sectionId: "",
+      assignedToUserId: "",
+      priority: "medium",
+    });
+    setIsCreateMissionOpen(false);
+  };
+
+  const handleMissionToggle = (missionId: string, completed: boolean) => {
+    setMissions(
+      missions.map((m) =>
+        m.id === missionId
+          ? {
+              ...m,
+              status: completed ? "completed" : "pending",
+              completedAt: completed ? new Date() : undefined,
+              updatedAt: new Date(),
+            }
+          : m,
+      ),
+    );
+  };
+
+  const getUserName = (userId: string) => {
+    return users.find((u) => u.id === userId)?.name || "مستخدم غير معروف";
+  };
+
+  const getMissionsForSection = (sectionId: string) => {
+    return missions.filter((m) => m.sectionId === sectionId);
+  };
+
+  const getPriorityColor = (priority: Mission["priority"]) => {
+    switch (priority) {
+      case "high":
+        return "destructive";
+      case "medium":
+        return "default";
+      default:
+        return "secondary";
+    }
+  };
+
+  const getPriorityText = (priority: Mission["priority"]) => {
+    switch (priority) {
+      case "high":
+        return "عالية";
+      case "medium":
+        return "متوسطة";
+      default:
+        return "منخفضة";
+    }
+  };
+
+  if (!room) {
+    return (
+      <DashboardLayout>
+        <div className="text-center">الغرفة غير موجودة</div>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <Link to="/dashboard">
+            <Button variant="ghost" size="sm">
+              <ArrowRight className="h-4 w-4 ml-2 rtl-flip" />
+              العودة للرئيسية
+            </Button>
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <Home className="h-6 w-6 text-primary icon-ltr" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">
+                {room.name}
+              </h1>
+              {room.description && (
+                <p className="text-muted-foreground">{room.description}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4 flex-wrap">
+          {user?.role === "admin" && (
+            <>
+              <Dialog
+                open={isCreateSectionOpen}
+                onOpenChange={setIsCreateSectionOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="ml-2 h-4 w-4 icon-ltr" />
+                    إضافة قسم
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>إنشاء قسم جديد</DialogTitle>
+                    <DialogDescription>
+                      أضف قسماً جديداً لتنظيم مهام التنظيف في {room.name}.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="section-name">اسم القسم</Label>
+                      <Input
+                        id="section-name"
+                        placeholder="مثل: الكاونترات، الأجهزة"
+                        value={newSection.name}
+                        onChange={(e) =>
+                          setNewSection({ ...newSection, name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="section-description">
+                        الوصف (اختياري)
+                      </Label>
+                      <Textarea
+                        id="section-description"
+                        placeholder="وصف مختصر للقسم"
+                        value={newSection.description}
+                        onChange={(e) =>
+                          setNewSection({
+                            ...newSection,
+                            description: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter className="gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsCreateSectionOpen(false)}
+                    >
+                      إلغاء
+                    </Button>
+                    <Button
+                      onClick={handleCreateSection}
+                      disabled={!newSection.name.trim()}
+                    >
+                      إنشاء القسم
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog
+                open={isCreateMissionOpen}
+                onOpenChange={setIsCreateMissionOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Plus className="ml-2 h-4 w-4 icon-ltr" />
+                    إضافة مهمة
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>إنشاء مهمة جديدة</DialogTitle>
+                    <DialogDescription>
+                      أضف مهمة تنظيف جديدة لـ {room.name}.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="mission-title">العنوان</Label>
+                      <Input
+                        id="mission-title"
+                        placeholder="عنوان المهمة"
+                        value={newMission.title}
+                        onChange={(e) =>
+                          setNewMission({
+                            ...newMission,
+                            title: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="mission-description">الوصف</Label>
+                      <Textarea
+                        id="mission-description"
+                        placeholder="وصف مفصل للمهمة"
+                        value={newMission.description}
+                        onChange={(e) =>
+                          setNewMission({
+                            ...newMission,
+                            description: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="mission-section">القسم</Label>
+                        <Select
+                          value={newMission.sectionId}
+                          onValueChange={(value) =>
+                            setNewMission({ ...newMission, sectionId: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="اختر قسم" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {sections.map((section) => (
+                              <SelectItem key={section.id} value={section.id}>
+                                {section.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="mission-user">تعيين إلى</Label>
+                        <Select
+                          value={newMission.assignedToUserId}
+                          onValueChange={(value) =>
+                            setNewMission({
+                              ...newMission,
+                              assignedToUserId: value,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="اختر مستخدم" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {user?.role === "admin" && (
+                              <SelectItem value={user.id}>
+                                {user.name} (أنت)
+                              </SelectItem>
+                            )}
+                            {users.map((u) => (
+                              <SelectItem key={u.id} value={u.id}>
+                                {u.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="mission-priority">الأولوية</Label>
+                      <Select
+                        value={newMission.priority}
+                        onValueChange={(value: "low" | "medium" | "high") =>
+                          setNewMission({ ...newMission, priority: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">منخفضة</SelectItem>
+                          <SelectItem value="medium">متوسطة</SelectItem>
+                          <SelectItem value="high">عالية</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter className="gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsCreateMissionOpen(false)}
+                    >
+                      إلغاء
+                    </Button>
+                    <Button
+                      onClick={handleCreateMission}
+                      disabled={
+                        !newMission.title ||
+                        !newMission.sectionId ||
+                        !newMission.assignedToUserId
+                      }
+                    >
+                      إنشاء المهمة
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
+        </div>
+
+        {/* Sections and Missions */}
+        <div className="space-y-6">
+          {sections.map((section) => {
+            const sectionMissions = getMissionsForSection(section.id);
+            return (
+              <Card key={section.id}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-xl">{section.name}</CardTitle>
+                      {section.description && (
+                        <CardDescription>{section.description}</CardDescription>
+                      )}
+                    </div>
+                    <Badge variant="outline">
+                      {sectionMissions.length} مهمة
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {sectionMissions.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50 icon-ltr" />
+                      <p>لا توجد مهام في هذا القسم بعد</p>
+                      <p className="text-sm">أضف مهمة للبدء</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {sectionMissions.map((mission) => (
+                        <Card
+                          key={mission.id}
+                          className="border-r-4 border-r-primary/20"
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Checkbox
+                                  checked={mission.status === "completed"}
+                                  onCheckedChange={(checked) =>
+                                    handleMissionToggle(
+                                      mission.id,
+                                      checked as boolean,
+                                    )
+                                  }
+                                  disabled={
+                                    mission.assignedToUserId !== user?.id &&
+                                    user?.role !== "admin"
+                                  }
+                                  className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                                />
+                                <div>
+                                  <h4
+                                    className={`font-medium ${mission.status === "completed" ? "line-through text-muted-foreground" : ""}`}
+                                  >
+                                    {mission.title}
+                                  </h4>
+                                  {mission.description && (
+                                    <p className="text-sm text-muted-foreground">
+                                      {mission.description}
+                                    </p>
+                                  )}
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                      <Users className="h-3 w-3 icon-ltr" />
+                                      {getUserName(mission.assignedToUserId)}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant={getPriorityColor(mission.priority)}
+                                >
+                                  {getPriorityText(mission.priority)}
+                                </Badge>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+
+          {sections.length === 0 && (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Home className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50 icon-ltr" />
+                <h3 className="text-lg font-medium mb-2">لا توجد أقسام بعد</h3>
+                <p className="text-muted-foreground mb-4">
+                  أنشئ أقساماً لتنظيم مهام التنظيف في {room.name}
+                </p>
+                {user?.role === "admin" && (
+                  <Button onClick={() => setIsCreateSectionOpen(true)}>
+                    <Plus className="ml-2 h-4 w-4 icon-ltr" />
+                    إنشاء أول قسم
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}
