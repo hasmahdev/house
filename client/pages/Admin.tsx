@@ -105,7 +105,7 @@ export default function Admin() {
     setUsers([
       {
         id: "1",
-        name: "مدير النظام",
+        name: "ماما",
         role: "admin",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -137,7 +137,7 @@ export default function Admin() {
       {
         id: "2",
         name: "غرفة المعيشة",
-        description: "مساحة تجمع العائلة",
+        description: "مساحة تجم�� العائلة",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -176,7 +176,7 @@ export default function Admin() {
       },
       {
         id: "2",
-        title: "تنظيف غرفة المعيشة بالمك��سة",
+        title: "تنظيف غرفة المعيشة بالمكنسة",
         description: "تنظيف السجاد وتحت الأثاث",
         sectionId: "2",
         assignedToUserId: "3",
@@ -1275,7 +1275,7 @@ export default function Admin() {
                       <div className="text-sm text-amber-800">
                         <p className="font-medium mb-1">ملاحظة مهمة:</p>
                         <p>
-                          سيتم إعادة تحميل الصفحة تلقائياً بعد الإصلاح لضمان ظهور التغييرات.
+                          سيتم إعادة تحميل الصفحة تلقائياً بعد الإصلاح لضم��ن ظهور التغييرات.
                           يُنصح بعمل نسخة احتياطية قبل تشغيل هذه الأداة.
                         </p>
                       </div>
