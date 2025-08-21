@@ -129,14 +129,14 @@ export default function Admin() {
       {
         id: "1",
         name: "المطبخ",
-        description: "منطقة الطبخ وتناول الطعام الرئيسية",
+        description: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         id: "2",
         name: "غرفة المعيشة",
-        description: "مساحة تجمع العائلة",
+        description: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -146,7 +146,7 @@ export default function Admin() {
       {
         id: "1",
         name: "الكاونترات",
-        description: "أسطح المطبخ",
+        description: "",
         roomId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -154,7 +154,7 @@ export default function Admin() {
       {
         id: "2",
         name: "الأجهزة",
-        description: "أجهزة المطبخ",
+        description: "",
         roomId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -165,7 +165,7 @@ export default function Admin() {
       {
         id: "1",
         title: "تنظيف كاونترات المطبخ",
-        description: "مسح جميع الأسطح والأجهزة",
+        description: "",
         sectionId: "1",
         assignedToUserId: "2",
         status: "pending",
@@ -176,7 +176,7 @@ export default function Admin() {
       {
         id: "2",
         title: "تنظيف غرفة المعيشة بالمكنسة",
-        description: "تنظيف السجاد وتحت الأثاث",
+        description: "",
         sectionId: "2",
         assignedToUserId: "3",
         status: "in_progress",
@@ -476,7 +476,7 @@ export default function Admin() {
                       <DialogHeader>
                         <DialogTitle>إنشاء غرفة جديدة</DialogTitle>
                         <DialogDescription>
-                          أضف غرفة جديدة لتنظيم مها�� التنظيف
+                          أضف غرفة جديدة لتنظيم مهام التنظيف
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
@@ -1091,7 +1091,7 @@ export default function Admin() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    الغرف النشطة
+                    الغرف ��لنشطة
                   </CardTitle>
                   <Home className="h-4 w-4 text-muted-foreground icon-ltr" />
                 </CardHeader>
@@ -1180,7 +1180,7 @@ export default function Admin() {
                       <h4 className="font-medium">نتائج الإصلاح:</h4>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <span className="text-muted-foreground">العناصر ��لمفحوصة:</span>
+                          <span className="text-muted-foreground">العناصر المفحوصة:</span>
                           <span className="font-medium mr-2">{fixResults.totalScanned}</span>
                         </div>
                         <div>
