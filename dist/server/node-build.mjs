@@ -383,11 +383,19 @@ const port = process.env.PORT || 3e3;
 const __dirname = import.meta.dirname;
 const distPath = path.join(__dirname, "../spa");
 app.use(express.static(distPath));
-app.get("*", (req, res) => {
+app.use((req, res, next) => {
   if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
-    return res.status(404).json({ error: "API endpoint not found" });
+    return next();
   }
-  res.sendFile(path.join(distPath, "index.html"));
+  if (req.path.includes(".")) {
+    return next();
+  }
+  try {
+    res.sendFile(path.join(distPath, "index.html"));
+  } catch (error) {
+    console.error("Error serving index.html:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 app.listen(port, () => {
   console.log(`🚀 Fusion Starter server running on port ${port}`);
