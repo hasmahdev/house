@@ -50,6 +50,9 @@ import {
   Home,
   ArrowRight,
   Settings2,
+  Zap,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { User, Mission, Room, Section } from "@shared/api";
 import { Navigate } from "react-router-dom";
@@ -74,11 +77,18 @@ export default function Admin() {
     password: "",
     role: "member" as "admin" | "member",
   });
-  const [newRoom, setNewRoom] = useState({ name: "", description: "" });
-  const [newSection, setNewSection] = useState({ name: "", description: "" });
+
+  // Arabic text fix states
+  const [isFixingArabicText, setIsFixingArabicText] = useState(false);
+  const [fixResults, setFixResults] = useState<{
+    totalScanned: number;
+    totalFixed: number;
+    details: string[];
+  } | null>(null);
+  const [newRoom, setNewRoom] = useState({ name: "" });
+  const [newSection, setNewSection] = useState({ name: "" });
   const [newMission, setNewMission] = useState({
     title: "",
-    description: "",
     sectionId: "",
     assignedToUserId: "",
     priority: "medium" as "low" | "medium" | "high",
@@ -94,7 +104,7 @@ export default function Admin() {
     setUsers([
       {
         id: "1",
-        name: "مدير النظام",
+        name: "ماما",
         role: "admin",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -119,14 +129,14 @@ export default function Admin() {
       {
         id: "1",
         name: "المطبخ",
-        description: "منطقة الطبخ وتناول الطعام الرئيسية",
+        description: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         id: "2",
         name: "غرفة المعيشة",
-        description: "مساحة تجمع العائلة",
+        description: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -136,7 +146,7 @@ export default function Admin() {
       {
         id: "1",
         name: "الكاونترات",
-        description: "أسطح المطبخ",
+        description: "",
         roomId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -144,7 +154,7 @@ export default function Admin() {
       {
         id: "2",
         name: "الأجهزة",
-        description: "أجهزة المطبخ",
+        description: "",
         roomId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -155,7 +165,7 @@ export default function Admin() {
       {
         id: "1",
         title: "تنظيف كاونترات المطبخ",
-        description: "مسح جميع الأسطح والأجهزة",
+        description: "",
         sectionId: "1",
         assignedToUserId: "2",
         status: "pending",
@@ -166,7 +176,7 @@ export default function Admin() {
       {
         id: "2",
         title: "تنظيف غرفة المعيشة بالمكنسة",
-        description: "تنظيف السجاد وتحت الأثاث",
+        description: "",
         sectionId: "2",
         assignedToUserId: "3",
         status: "in_progress",
@@ -199,12 +209,12 @@ export default function Admin() {
     const room: Room = {
       id: Date.now().toString(),
       name: newRoom.name,
-      description: newRoom.description,
+      description: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     setRooms([...rooms, room]);
-    setNewRoom({ name: "", description: "" });
+    setNewRoom({ name: "" });
     setIsCreateRoomOpen(false);
   };
 
@@ -221,13 +231,13 @@ export default function Admin() {
     const section: Section = {
       id: Date.now().toString(),
       name: newSection.name,
-      description: newSection.description,
+      description: "",
       roomId: selectedRoom.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     setSections([...sections, section]);
-    setNewSection({ name: "", description: "" });
+    setNewSection({ name: "" });
     setIsCreateSectionOpen(false);
   };
 
@@ -240,7 +250,7 @@ export default function Admin() {
     const mission: Mission = {
       id: Date.now().toString(),
       title: newMission.title,
-      description: newMission.description,
+      description: "",
       sectionId: newMission.sectionId,
       assignedToUserId: newMission.assignedToUserId,
       status: "pending",
@@ -251,7 +261,6 @@ export default function Admin() {
     setMissions([...missions, mission]);
     setNewMission({
       title: "",
-      description: "",
       sectionId: "",
       assignedToUserId: "",
       priority: "medium",
@@ -315,6 +324,117 @@ export default function Admin() {
     return missions.filter((m) => m.sectionId === sectionId);
   };
 
+  // Arabic text corruption fix function
+  const fixArabicTextCorruption = async () => {
+    setIsFixingArabicText(true);
+    setFixResults(null);
+
+    try {
+      const results = {
+        totalScanned: 0,
+        totalFixed: 0,
+        details: [] as string[],
+      };
+
+      // Common Arabic text corruptions and their fixes
+      const arabicFixes = [
+        { corrupted: /\?+/g, fixed: "" }, // Remove question marks
+        { corrupted: /Ù\?/g, fixed: "ال" }, // Common "al" prefix
+        { corrupted: /\?\?\?/g, fixed: "المنزل" }, // House
+        { corrupted: /\?\?\?\?/g, fixed: "التنظيف" }, // Cleaning
+        { corrupted: /مدير النظام/g, fixed: "ماما" }, // Change admin name
+      ];
+
+      // Fix text in all DOM elements
+      const fixElementText = (element: Element) => {
+        if (element.nodeType === Node.TEXT_NODE) {
+          const originalText = element.textContent || "";
+          let fixedText = originalText;
+
+          arabicFixes.forEach(({ corrupted, fixed }) => {
+            if (corrupted.test(fixedText)) {
+              fixedText = fixedText.replace(corrupted, fixed);
+              results.totalFixed++;
+              results.details.push(`Fixed: "${originalText}" → "${fixedText}"`);
+            }
+          });
+
+          if (fixedText !== originalText) {
+            element.textContent = fixedText;
+          }
+          results.totalScanned++;
+        }
+
+        // Recursively check child nodes
+        element.childNodes.forEach(child => {
+          if (child.nodeType === Node.TEXT_NODE) {
+            const originalText = child.textContent || "";
+            let fixedText = originalText;
+
+            arabicFixes.forEach(({ corrupted, fixed }) => {
+              if (corrupted.test(fixedText)) {
+                fixedText = fixedText.replace(corrupted, fixed);
+                results.totalFixed++;
+                results.details.push(`Fixed: "${originalText}" → "${fixedText}"`);
+              }
+            });
+
+            if (fixedText !== originalText) {
+              child.textContent = fixedText;
+            }
+            results.totalScanned++;
+          } else if (child.nodeType === Node.ELEMENT_NODE) {
+            fixElementText(child as Element);
+          }
+        });
+      };
+
+      // Scan entire document
+      fixElementText(document.body);
+
+      // Fix localStorage data
+      Object.keys(localStorage).forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) {
+          let fixedValue = value;
+          arabicFixes.forEach(({ corrupted, fixed }) => {
+            if (corrupted.test(fixedValue)) {
+              fixedValue = fixedValue.replace(corrupted, fixed);
+              results.totalFixed++;
+              results.details.push(`Fixed localStorage "${key}"`);
+            }
+          });
+          if (fixedValue !== value) {
+            localStorage.setItem(key, fixedValue);
+          }
+          results.totalScanned++;
+        }
+      });
+
+      // Update current page data
+      setUsers(prevUsers =>
+        prevUsers.map(user => ({
+          ...user,
+          name: user.name === "مدير النظام" ? "ماما" : user.name
+        }))
+      );
+
+      // Force re-render to show changes
+      window.location.reload();
+
+      setFixResults(results);
+    } catch (error) {
+      console.error("Error fixing Arabic text:", error);
+      setFixResults({
+        totalScanned: 0,
+        totalFixed: 0,
+        details: ["Error occurred during fixing process"],
+      });
+    } finally {
+      setIsFixingArabicText(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -329,10 +449,11 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="rooms" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="rooms">الغرف والأقسام</TabsTrigger>
             <TabsTrigger value="users">المستخدمين</TabsTrigger>
             <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
+            <TabsTrigger value="settings">الإعدادات</TabsTrigger>
           </TabsList>
 
           <TabsContent value="rooms" className="space-y-6">
@@ -367,22 +488,6 @@ export default function Admin() {
                             value={newRoom.name}
                             onChange={(e) =>
                               setNewRoom({ ...newRoom, name: e.target.value })
-                            }
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="room-description">
-                            الوصف (اختياري)
-                          </Label>
-                          <Textarea
-                            id="room-description"
-                            placeholder="وصف مختصر للغرفة"
-                            value={newRoom.description}
-                            onChange={(e) =>
-                              setNewRoom({
-                                ...newRoom,
-                                description: e.target.value,
-                              })
                             }
                           />
                         </div>
@@ -424,11 +529,6 @@ export default function Admin() {
                             </div>
                             <div>
                               <h4 className="font-medium">{room.name}</h4>
-                              {room.description && (
-                                <p className="text-sm text-muted-foreground">
-                                  {room.description}
-                                </p>
-                              )}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -517,22 +617,6 @@ export default function Admin() {
                                 }
                               />
                             </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="section-description">
-                                الوصف (اختياري)
-                              </Label>
-                              <Textarea
-                                id="section-description"
-                                placeholder="وصف مختصر للقسم"
-                                value={newSection.description}
-                                onChange={(e) =>
-                                  setNewSection({
-                                    ...newSection,
-                                    description: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
                           </div>
                           <DialogFooter className="gap-2">
                             <Button
@@ -559,11 +643,6 @@ export default function Admin() {
                             <div className="flex items-center justify-between">
                               <div>
                                 <h4 className="font-medium">{section.name}</h4>
-                                {section.description && (
-                                  <p className="text-sm text-muted-foreground">
-                                    {section.description}
-                                  </p>
-                                )}
                                 <Badge variant="outline" className="mt-1">
                                   {getSectionMissions(section.id).length} مهمة
                                 </Badge>
@@ -603,22 +682,6 @@ export default function Admin() {
                                               ...newMission,
                                               title: e.target.value,
                                               sectionId: section.id,
-                                            })
-                                          }
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="mission-description">
-                                          الوصف
-                                        </Label>
-                                        <Textarea
-                                          id="mission-description"
-                                          placeholder="وصف مفصل للمهمة"
-                                          value={newMission.description}
-                                          onChange={(e) =>
-                                            setNewMission({
-                                              ...newMission,
-                                              description: e.target.value,
                                             })
                                           }
                                         />
@@ -1028,7 +1091,7 @@ export default function Admin() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    الغرف النشطة
+                    الغرف ��لنشطة
                   </CardTitle>
                   <Home className="h-4 w-4 text-muted-foreground icon-ltr" />
                 </CardHeader>
@@ -1061,6 +1124,120 @@ export default function Admin() {
                   </div>
                   <p className="text-xs text-muted-foreground">
                     إكمال المهام الإجمالي
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6">
+            <h2 className="text-2xl font-bold text-foreground">إعدادات النظام</h2>
+
+            <div className="grid gap-6">
+              {/* Arabic Text Fix Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-primary icon-ltr" />
+                    إصلاح النصوص العربية المُتضررة
+                  </CardTitle>
+                  <CardDescription>
+                    يقوم هذا الأداة بمسح الموقع بالكامل وإصلاح النصوص العربية المُتضررة (علامات الاستفهام "؟")
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      onClick={fixArabicTextCorruption}
+                      disabled={isFixingArabicText}
+                      className="flex items-center gap-2"
+                    >
+                      {isFixingArabicText ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          جارٍ الإصلاح...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="h-4 w-4 icon-ltr" />
+                          إصلاح النصوص العربية
+                        </>
+                      )}
+                    </Button>
+
+                    {fixResults && (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 icon-ltr" />
+                        <span className="text-sm text-green-600">
+                          تم الإصلاح بنجاح
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {fixResults && (
+                    <div className="mt-4 p-4 bg-muted/50 rounded-lg space-y-2">
+                      <h4 className="font-medium">نتائج الإصلاح:</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">العناصر المفحوصة:</span>
+                          <span className="font-medium mr-2">{fixResults.totalScanned}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">العناصر المُصلحة:</span>
+                          <span className="font-medium mr-2">{fixResults.totalFixed}</span>
+                        </div>
+                      </div>
+
+                      {fixResults.details.length > 0 && (
+                        <div className="mt-3">
+                          <h5 className="text-sm font-medium mb-2">تفاصيل الإصلاح:</h5>
+                          <div className="max-h-32 overflow-y-auto space-y-1">
+                            {fixResults.details.slice(0, 10).map((detail, index) => (
+                              <div key={index} className="text-xs text-muted-foreground bg-background p-2 rounded">
+                                {detail}
+                              </div>
+                            ))}
+                            {fixResults.details.length > 10 && (
+                              <div className="text-xs text-muted-foreground">
+                                ...و {fixResults.details.length - 10} إصلاحات أخرى
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 icon-ltr" />
+                      <div className="text-sm text-amber-800">
+                        <p className="font-medium mb-1">ملاحظة مهمة:</p>
+                        <p>
+                          سيتم إعادة تحميل الصفحة تلقائياً بعد الإصلاح لضمان ظهور التغييرات.
+                          يُنصح بعمل نسخة احتياطية قبل تشغيل هذه الأداة.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Additional Settings Placeholder */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings2 className="h-5 w-5 text-primary icon-ltr" />
+                    إعدادات أخرى
+                  </CardTitle>
+                  <CardDescription>
+                    إعدادات إضافية للنظام
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    سيتم إضافة المزيد من الإعدادات هنا في المستقبل.
                   </p>
                 </CardContent>
               </Card>

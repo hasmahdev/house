@@ -73,8 +73,8 @@ export default function Login() {
 
       await login({ userId: selectedUser.id, password });
       navigate("/dashboard");
-    } catch (error) {
-      setError("كل��ة المرور غير صحيحة");
+    } catch (error: any) {
+      setError(error.message || "كلمة المرور غير صحيحة");
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +154,7 @@ export default function Login() {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="ml-2 h-4 w-4 animate-spin icon-ltr" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin icon-ltr" />
                     جارٍ تسجيل الدخول...
                   </>
                 ) : (
@@ -163,17 +163,6 @@ export default function Login() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <div className="text-sm text-muted-foreground">
-                حسابات تجريبية:
-              </div>
-              <div className="mt-2 space-y-1 text-xs">
-                <div className="text-muted-foreground">
-                  مدير النظام: admin123
-                </div>
-                <div className="text-muted-foreground">عضو: member123</div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>

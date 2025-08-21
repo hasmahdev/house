@@ -346,4 +346,39 @@
   [data-radix-aspect-ratio] {
     direction: ltr;
   }
+
+  /* Form specific RTL fixes */
+  .form-wrapper {
+    direction: rtl;
+  }
+
+  .form-wrapper input,
+  .form-wrapper textarea,
+  .form-wrapper select {
+    text-align: right;
+  }
+
+  /* Button with loading icon spacing for RTL */
+  .btn-loading-rtl {
+    flex-direction: row-reverse;
+  }
+
+  /* Error message styling for Arabic */
+  .error-message-rtl {
+    direction: rtl;
+    text-align: center;
+    font-family: "Cairo", sans-serif;
+  }
+
+  /* Select content positioning for RTL */
+  [data-radix-select-content] {
+    transform-origin: top right;
+  }
+
+  /* Improve Arabic text rendering */
+  .arabic-form-text {
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    font-variant-ligatures: common-ligatures;
+  }
 }

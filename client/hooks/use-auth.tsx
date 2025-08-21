@@ -42,7 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
-        throw new Error("Login failed");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "فشل تسجيل الدخول");
       }
 
       const data: LoginResponse = await response.json();

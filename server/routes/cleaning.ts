@@ -14,21 +14,21 @@ let rooms: Room[] = [
   {
     id: "1",
     name: "Kitchen",
-    description: "Main cooking and dining area",
+    description: "",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "2",
     name: "Living Room",
-    description: "Family gathering space",
+    description: "",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "3",
     name: "Bathroom",
-    description: "Main bathroom",
+    description: "",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -38,7 +38,7 @@ let sections: Section[] = [
   {
     id: "1",
     name: "Countertops",
-    description: "Kitchen counter surfaces",
+    description: "",
     roomId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -46,7 +46,7 @@ let sections: Section[] = [
   {
     id: "2",
     name: "Appliances",
-    description: "Kitchen appliances",
+    description: "",
     roomId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -54,7 +54,7 @@ let sections: Section[] = [
   {
     id: "3",
     name: "Seating Area",
-    description: "Sofas and chairs",
+    description: "",
     roomId: "2",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -65,7 +65,7 @@ let missions: Mission[] = [
   {
     id: "1",
     title: "Clean kitchen counters",
-    description: "Wipe down all countertops and appliances",
+    description: "",
     sectionId: "1",
     assignedToUserId: "2",
     status: "pending",
@@ -76,7 +76,7 @@ let missions: Mission[] = [
   {
     id: "2",
     title: "Vacuum living room",
-    description: "Vacuum the carpet and clean under furniture",
+    description: "",
     sectionId: "3",
     assignedToUserId: "2",
     status: "in_progress",
@@ -93,7 +93,7 @@ export const handleGetRooms: RequestHandler = (req, res) => {
 
 export const handleCreateRoom: RequestHandler = (req, res) => {
   try {
-    const { name, description }: CreateRoomRequest = req.body;
+    const { name }: CreateRoomRequest = req.body;
 
     if (!name) {
       return res.status(400).json({ error: "Room name is required" });
@@ -102,7 +102,7 @@ export const handleCreateRoom: RequestHandler = (req, res) => {
     const newRoom: Room = {
       id: (rooms.length + 1).toString(),
       name,
-      description,
+      description: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -147,7 +147,7 @@ export const handleGetSections: RequestHandler = (req, res) => {
 
 export const handleCreateSection: RequestHandler = (req, res) => {
   try {
-    const { name, description, roomId }: CreateSectionRequest = req.body;
+    const { name, roomId }: CreateSectionRequest = req.body;
 
     if (!name || !roomId) {
       return res
@@ -163,7 +163,7 @@ export const handleCreateSection: RequestHandler = (req, res) => {
     const newSection: Section = {
       id: (sections.length + 1).toString(),
       name,
-      description,
+      description: "",
       roomId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -193,7 +193,6 @@ export const handleCreateMission: RequestHandler = (req, res) => {
   try {
     const {
       title,
-      description,
       sectionId,
       assignedToUserId,
       priority,
@@ -217,7 +216,7 @@ export const handleCreateMission: RequestHandler = (req, res) => {
     const newMission: Mission = {
       id: (missions.length + 1).toString(),
       title,
-      description,
+      description: "",
       sectionId,
       assignedToUserId,
       status: "pending",
