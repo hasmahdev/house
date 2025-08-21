@@ -85,7 +85,7 @@ export default function Admin() {
     totalFixed: number;
     details: string[];
   } | null>(null);
-  const [newRoom, setNewRoom] = useState({ name: "", description: "" });
+  const [newRoom, setNewRoom] = useState({ name: "" });
   const [newSection, setNewSection] = useState({ name: "", description: "" });
   const [newMission, setNewMission] = useState({
     title: "",
@@ -137,7 +137,7 @@ export default function Admin() {
       {
         id: "2",
         name: "غرفة المعيشة",
-        description: "مساحة تجم�� العائلة",
+        description: "مساحة تجمع العائلة",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -210,12 +210,12 @@ export default function Admin() {
     const room: Room = {
       id: Date.now().toString(),
       name: newRoom.name,
-      description: newRoom.description,
+      description: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     setRooms([...rooms, room]);
-    setNewRoom({ name: "", description: "" });
+    setNewRoom({ name: "" });
     setIsCreateRoomOpen(false);
   };
 
@@ -490,22 +490,6 @@ export default function Admin() {
                             value={newRoom.name}
                             onChange={(e) =>
                               setNewRoom({ ...newRoom, name: e.target.value })
-                            }
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="room-description">
-                            الوصف (اختياري)
-                          </Label>
-                          <Textarea
-                            id="room-description"
-                            placeholder="وصف مختصر للغرفة"
-                            value={newRoom.description}
-                            onChange={(e) =>
-                              setNewRoom({
-                                ...newRoom,
-                                description: e.target.value,
-                              })
                             }
                           />
                         </div>
@@ -1191,7 +1175,7 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <h2 className="text-2xl font-bold text-foreground">إعدادات النظام</h2>
+            <h2 className="text-2xl font-bold text-foreground">إع��ادات النظام</h2>
 
             <div className="grid gap-6">
               {/* Arabic Text Fix Section */}
@@ -1275,7 +1259,7 @@ export default function Admin() {
                       <div className="text-sm text-amber-800">
                         <p className="font-medium mb-1">ملاحظة مهمة:</p>
                         <p>
-                          سيتم إعادة تحميل الصفحة تلقائياً بعد الإصلاح لضم��ن ظهور التغييرات.
+                          سيتم إعادة تحميل الصفحة تلقائياً بعد الإصلاح لضمان ظهور التغييرات.
                           يُنصح بعمل نسخة احتياطية قبل تشغيل هذه الأداة.
                         </p>
                       </div>
