@@ -74,6 +74,14 @@ export default function Admin() {
     password: "",
     role: "member" as "admin" | "member",
   });
+
+  // Arabic text fix states
+  const [isFixingArabicText, setIsFixingArabicText] = useState(false);
+  const [fixResults, setFixResults] = useState<{
+    totalScanned: number;
+    totalFixed: number;
+    details: string[];
+  } | null>(null);
   const [newRoom, setNewRoom] = useState({ name: "", description: "" });
   const [newSection, setNewSection] = useState({ name: "", description: "" });
   const [newMission, setNewMission] = useState({
