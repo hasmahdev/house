@@ -163,17 +163,6 @@ export default function Login() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <div className="text-sm text-muted-foreground">
-                حسابات تجريبية:
-              </div>
-              <div className="mt-2 space-y-1 text-xs">
-                <div className="text-muted-foreground">
-                  مدير النظام: admin123
-                </div>
-                <div className="text-muted-foreground">عضو: member123</div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
