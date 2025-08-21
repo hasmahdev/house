@@ -50,6 +50,9 @@ import {
   Home,
   ArrowRight,
   Settings2,
+  Zap,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { User, Mission, Room, Section } from "@shared/api";
 import { Navigate } from "react-router-dom";
@@ -516,7 +519,7 @@ export default function Admin() {
                               <Label htmlFor="section-name">اسم القسم</Label>
                               <Input
                                 id="section-name"
-                                placeholder="مثل: الكاونترات، ��لأجهزة"
+                                placeholder="مثل: الكاو��ترات، ��لأجهزة"
                                 value={newSection.name}
                                 onChange={(e) =>
                                   setNewSection({
