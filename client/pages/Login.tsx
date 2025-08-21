@@ -154,7 +154,7 @@ export default function Login() {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="ml-2 h-4 w-4 animate-spin icon-ltr" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin icon-ltr" />
                     جارٍ تسجيل الدخول...
                   </>
                 ) : (
