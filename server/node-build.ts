@@ -19,7 +19,12 @@ app.get("*", (req, res) => {
     return res.status(404).json({ error: "API endpoint not found" });
   }
 
-  res.sendFile(path.join(distPath, "index.html"));
+  try {
+    res.sendFile(path.join(distPath, "index.html"));
+  } catch (error) {
+    console.error("Error serving index.html:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.listen(port, () => {
