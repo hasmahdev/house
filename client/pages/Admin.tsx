@@ -89,7 +89,6 @@ export default function Admin() {
   const [newSection, setNewSection] = useState({ name: "" });
   const [newMission, setNewMission] = useState({
     title: "",
-    description: "",
     sectionId: "",
     assignedToUserId: "",
     priority: "medium" as "low" | "medium" | "high",
@@ -176,7 +175,7 @@ export default function Admin() {
       },
       {
         id: "2",
-        title: "تنظيف غرفة المعيشة بالمكنسة",
+        title: "تنظيف غرفة المعيشة بالمكنس��",
         description: "تنظيف السجاد وتحت الأثاث",
         sectionId: "2",
         assignedToUserId: "3",
@@ -251,7 +250,7 @@ export default function Admin() {
     const mission: Mission = {
       id: Date.now().toString(),
       title: newMission.title,
-      description: newMission.description,
+      description: "",
       sectionId: newMission.sectionId,
       assignedToUserId: newMission.assignedToUserId,
       status: "pending",
@@ -262,7 +261,6 @@ export default function Admin() {
     setMissions([...missions, mission]);
     setNewMission({
       title: "",
-      description: "",
       sectionId: "",
       assignedToUserId: "",
       priority: "medium",
@@ -687,29 +685,13 @@ export default function Admin() {
                                         </Label>
                                         <Input
                                           id="mission-title"
-                                          placeholder="عنوان ��لمهمة"
+                                          placeholder="عنوان المهمة"
                                           value={newMission.title}
                                           onChange={(e) =>
                                             setNewMission({
                                               ...newMission,
                                               title: e.target.value,
                                               sectionId: section.id,
-                                            })
-                                          }
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="mission-description">
-                                          الوصف
-                                        </Label>
-                                        <Textarea
-                                          id="mission-description"
-                                          placeholder="وصف مفصل للمهمة"
-                                          value={newMission.description}
-                                          onChange={(e) =>
-                                            setNewMission({
-                                              ...newMission,
-                                              description: e.target.value,
                                             })
                                           }
                                         />
@@ -949,7 +931,7 @@ export default function Admin() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء مس��خدم جديد</DialogTitle>
+                    <DialogTitle>إنشاء مستخدم جديد</DialogTitle>
                     <DialogDescription>
                       أضف عضواً جديداً في العائلة إلى نظام إد��رة التنظيف
                     </DialogDescription>
@@ -1188,7 +1170,7 @@ export default function Admin() {
                       ) : (
                         <>
                           <Zap className="h-4 w-4 icon-ltr" />
-                          إصلاح النصوص العربية
+                          إصلاح النصوص ا��عربية
                         </>
                       )}
                     </Button>
