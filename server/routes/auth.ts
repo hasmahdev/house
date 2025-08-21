@@ -6,7 +6,7 @@ import { supabaseServer } from "../lib/supabase";
 const users: User[] = [
   {
     id: "1",
-    name: "مدير النظام",
+    name: "ماما",
     role: "admin",
     password: "admin123", // In production, this would be hashed
     createdAt: new Date(),
@@ -14,7 +14,7 @@ const users: User[] = [
   },
   {
     id: "2",
-    name: "عضو العائلة",
+    name: "ع��و العائلة",
     role: "member",
     password: "member123", // In production, this would be hashed
     createdAt: new Date(),
