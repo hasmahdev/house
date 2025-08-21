@@ -155,7 +155,7 @@ export default function Admin() {
       {
         id: "2",
         name: "الأجهزة",
-        description: "��جهزة المطبخ",
+        description: "أجهزة المطبخ",
         roomId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -176,7 +176,7 @@ export default function Admin() {
       },
       {
         id: "2",
-        title: "تنظيف غرفة المعيشة بالمكنسة",
+        title: "تنظيف غرفة المعيشة بالمك��سة",
         description: "تنظيف السجاد وتحت الأثاث",
         sectionId: "2",
         assignedToUserId: "3",
@@ -619,7 +619,7 @@ export default function Admin() {
                         <DialogContent>
                           <DialogHeader>
                             <DialogTitle>
-                              إ��شاء قسم جديد في {selectedRoom.name}
+                              إنشاء قسم جديد في {selectedRoom.name}
                             </DialogTitle>
                             <DialogDescription>
                               أضف قسماً جديداً لتنظيم مهام التنظيف
@@ -1184,6 +1184,120 @@ export default function Admin() {
                   </div>
                   <p className="text-xs text-muted-foreground">
                     إكمال المهام الإجمالي
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6">
+            <h2 className="text-2xl font-bold text-foreground">إعدادات النظام</h2>
+
+            <div className="grid gap-6">
+              {/* Arabic Text Fix Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-primary icon-ltr" />
+                    إصلاح النصوص العربية المُتضررة
+                  </CardTitle>
+                  <CardDescription>
+                    يقوم هذا الأداة بمسح الموقع بالكامل وإصلاح النصوص العربية المُتضررة (علامات الاستفهام "؟")
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      onClick={fixArabicTextCorruption}
+                      disabled={isFixingArabicText}
+                      className="flex items-center gap-2"
+                    >
+                      {isFixingArabicText ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          جارٍ الإصلاح...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="h-4 w-4 icon-ltr" />
+                          إصلاح النصوص العربية
+                        </>
+                      )}
+                    </Button>
+
+                    {fixResults && (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 icon-ltr" />
+                        <span className="text-sm text-green-600">
+                          تم الإصلاح بنجاح
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {fixResults && (
+                    <div className="mt-4 p-4 bg-muted/50 rounded-lg space-y-2">
+                      <h4 className="font-medium">نتائج الإصلاح:</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">العناصر المفحوصة:</span>
+                          <span className="font-medium mr-2">{fixResults.totalScanned}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">العناصر المُصلحة:</span>
+                          <span className="font-medium mr-2">{fixResults.totalFixed}</span>
+                        </div>
+                      </div>
+
+                      {fixResults.details.length > 0 && (
+                        <div className="mt-3">
+                          <h5 className="text-sm font-medium mb-2">تفاصيل الإصلاح:</h5>
+                          <div className="max-h-32 overflow-y-auto space-y-1">
+                            {fixResults.details.slice(0, 10).map((detail, index) => (
+                              <div key={index} className="text-xs text-muted-foreground bg-background p-2 rounded">
+                                {detail}
+                              </div>
+                            ))}
+                            {fixResults.details.length > 10 && (
+                              <div className="text-xs text-muted-foreground">
+                                ...و {fixResults.details.length - 10} إصلاحات أخرى
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 icon-ltr" />
+                      <div className="text-sm text-amber-800">
+                        <p className="font-medium mb-1">ملاحظة مهمة:</p>
+                        <p>
+                          سيتم إعادة تحميل الصفحة تلقائياً بعد الإصلاح لضمان ظهور التغييرات.
+                          يُنصح بعمل نسخة احتياطية قبل تشغيل هذه الأداة.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Additional Settings Placeholder */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings2 className="h-5 w-5 text-primary icon-ltr" />
+                    إعدادات أخرى
+                  </CardTitle>
+                  <CardDescription>
+                    إعدادات إضافية للنظام
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    سيتم إضافة المزيد من الإعدادات هنا في المستقبل.
                   </p>
                 </CardContent>
               </Card>
