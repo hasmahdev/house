@@ -86,7 +86,7 @@ export default function Admin() {
     details: string[];
   } | null>(null);
   const [newRoom, setNewRoom] = useState({ name: "" });
-  const [newSection, setNewSection] = useState({ name: "", description: "" });
+  const [newSection, setNewSection] = useState({ name: "" });
   const [newMission, setNewMission] = useState({
     title: "",
     description: "",
@@ -232,13 +232,13 @@ export default function Admin() {
     const section: Section = {
       id: Date.now().toString(),
       name: newSection.name,
-      description: newSection.description,
+      description: "",
       roomId: selectedRoom.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     setSections([...sections, section]);
-    setNewSection({ name: "", description: "" });
+    setNewSection({ name: "" });
     setIsCreateSectionOpen(false);
   };
 
@@ -624,22 +624,6 @@ export default function Admin() {
                                 }
                               />
                             </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="section-description">
-                                الوصف (اختياري)
-                              </Label>
-                              <Textarea
-                                id="section-description"
-                                placeholder="وصف مختصر للقسم"
-                                value={newSection.description}
-                                onChange={(e) =>
-                                  setNewSection({
-                                    ...newSection,
-                                    description: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
                           </div>
                           <DialogFooter className="gap-2">
                             <Button
@@ -703,7 +687,7 @@ export default function Admin() {
                                         </Label>
                                         <Input
                                           id="mission-title"
-                                          placeholder="عنوان المهمة"
+                                          placeholder="عنوان ��لمهمة"
                                           value={newMission.title}
                                           onChange={(e) =>
                                             setNewMission({
@@ -965,7 +949,7 @@ export default function Admin() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء مستخدم جديد</DialogTitle>
+                    <DialogTitle>إنشاء مس��خدم جديد</DialogTitle>
                     <DialogDescription>
                       أضف عضواً جديداً في العائلة إلى نظام إد��رة التنظيف
                     </DialogDescription>
@@ -1175,7 +1159,7 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <h2 className="text-2xl font-bold text-foreground">إع��ادات النظام</h2>
+            <h2 className="text-2xl font-bold text-foreground">إعدادات النظام</h2>
 
             <div className="grid gap-6">
               {/* Arabic Text Fix Section */}
