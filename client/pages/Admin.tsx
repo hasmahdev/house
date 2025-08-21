@@ -155,7 +155,7 @@ export default function Admin() {
       {
         id: "2",
         name: "الأجهزة",
-        description: "أجهزة المطبخ",
+        description: "��جهزة المطبخ",
         roomId: "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -324,6 +324,117 @@ export default function Admin() {
 
   const getSectionMissions = (sectionId: string) => {
     return missions.filter((m) => m.sectionId === sectionId);
+  };
+
+  // Arabic text corruption fix function
+  const fixArabicTextCorruption = async () => {
+    setIsFixingArabicText(true);
+    setFixResults(null);
+
+    try {
+      const results = {
+        totalScanned: 0,
+        totalFixed: 0,
+        details: [] as string[],
+      };
+
+      // Common Arabic text corruptions and their fixes
+      const arabicFixes = [
+        { corrupted: /\?+/g, fixed: "" }, // Remove question marks
+        { corrupted: /Ù\?/g, fixed: "ال" }, // Common "al" prefix
+        { corrupted: /\?\?\?/g, fixed: "المنزل" }, // House
+        { corrupted: /\?\?\?\?/g, fixed: "التنظيف" }, // Cleaning
+        { corrupted: /مدير النظام/g, fixed: "ماما" }, // Change admin name
+      ];
+
+      // Fix text in all DOM elements
+      const fixElementText = (element: Element) => {
+        if (element.nodeType === Node.TEXT_NODE) {
+          const originalText = element.textContent || "";
+          let fixedText = originalText;
+
+          arabicFixes.forEach(({ corrupted, fixed }) => {
+            if (corrupted.test(fixedText)) {
+              fixedText = fixedText.replace(corrupted, fixed);
+              results.totalFixed++;
+              results.details.push(`Fixed: "${originalText}" → "${fixedText}"`);
+            }
+          });
+
+          if (fixedText !== originalText) {
+            element.textContent = fixedText;
+          }
+          results.totalScanned++;
+        }
+
+        // Recursively check child nodes
+        element.childNodes.forEach(child => {
+          if (child.nodeType === Node.TEXT_NODE) {
+            const originalText = child.textContent || "";
+            let fixedText = originalText;
+
+            arabicFixes.forEach(({ corrupted, fixed }) => {
+              if (corrupted.test(fixedText)) {
+                fixedText = fixedText.replace(corrupted, fixed);
+                results.totalFixed++;
+                results.details.push(`Fixed: "${originalText}" → "${fixedText}"`);
+              }
+            });
+
+            if (fixedText !== originalText) {
+              child.textContent = fixedText;
+            }
+            results.totalScanned++;
+          } else if (child.nodeType === Node.ELEMENT_NODE) {
+            fixElementText(child as Element);
+          }
+        });
+      };
+
+      // Scan entire document
+      fixElementText(document.body);
+
+      // Fix localStorage data
+      Object.keys(localStorage).forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) {
+          let fixedValue = value;
+          arabicFixes.forEach(({ corrupted, fixed }) => {
+            if (corrupted.test(fixedValue)) {
+              fixedValue = fixedValue.replace(corrupted, fixed);
+              results.totalFixed++;
+              results.details.push(`Fixed localStorage "${key}"`);
+            }
+          });
+          if (fixedValue !== value) {
+            localStorage.setItem(key, fixedValue);
+          }
+          results.totalScanned++;
+        }
+      });
+
+      // Update current page data
+      setUsers(prevUsers =>
+        prevUsers.map(user => ({
+          ...user,
+          name: user.name === "مدير النظام" ? "ماما" : user.name
+        }))
+      );
+
+      // Force re-render to show changes
+      window.location.reload();
+
+      setFixResults(results);
+    } catch (error) {
+      console.error("Error fixing Arabic text:", error);
+      setFixResults({
+        totalScanned: 0,
+        totalFixed: 0,
+        details: ["Error occurred during fixing process"],
+      });
+    } finally {
+      setIsFixingArabicText(false);
+    }
   };
 
   return (
@@ -508,7 +619,7 @@ export default function Admin() {
                         <DialogContent>
                           <DialogHeader>
                             <DialogTitle>
-                              إنشاء قسم جديد في {selectedRoom.name}
+                              إ��شاء قسم جديد في {selectedRoom.name}
                             </DialogTitle>
                             <DialogDescription>
                               أضف قسماً جديداً لتنظيم مهام التنظيف
@@ -519,7 +630,7 @@ export default function Admin() {
                               <Label htmlFor="section-name">اسم القسم</Label>
                               <Input
                                 id="section-name"
-                                placeholder="مثل: الكاو��ترات، ��لأجهزة"
+                                placeholder="مثل: الكاونترات، ��لأجهزة"
                                 value={newSection.name}
                                 onChange={(e) =>
                                   setNewSection({
