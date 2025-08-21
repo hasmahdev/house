@@ -73,8 +73,8 @@ export default function Login() {
 
       await login({ userId: selectedUser.id, password });
       navigate("/dashboard");
-    } catch (error) {
-      setError("كل��ة المرور غير صحيحة");
+    } catch (error: any) {
+      setError(error.message || "كلمة المرور غير صحيحة");
     } finally {
       setIsLoading(false);
     }
