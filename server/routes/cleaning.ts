@@ -13,19 +13,19 @@ import {
 let rooms: Room[] = [
   {
     id: "1",
-    name: "Kitchen",
+    name: "المطبخ",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "2",
-    name: "Living Room",
+    name: "غرفة المعيشة",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "3",
-    name: "Bathroom",
+    name: "الحمام",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
