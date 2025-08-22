@@ -34,21 +34,21 @@ let rooms: Room[] = [
 let sections: Section[] = [
   {
     id: "1",
-    name: "Countertops",
+    name: "الكاونترات",
     roomId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "2",
-    name: "Appliances",
+    name: "الأجهزة",
     roomId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "3",
-    name: "Seating Area",
+    name: "منطقة الجلوس",
     roomId: "2",
     createdAt: new Date(),
     updatedAt: new Date(),
