@@ -35,7 +35,6 @@ let sections: Section[] = [
   {
     id: "1",
     name: "Countertops",
-    description: "",
     roomId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -43,7 +42,6 @@ let sections: Section[] = [
   {
     id: "2",
     name: "Appliances",
-    description: "",
     roomId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -51,7 +49,6 @@ let sections: Section[] = [
   {
     id: "3",
     name: "Seating Area",
-    description: "",
     roomId: "2",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -62,7 +59,6 @@ let missions: Mission[] = [
   {
     id: "1",
     title: "Clean kitchen counters",
-    description: "",
     sectionId: "1",
     assignedToUserId: "2",
     status: "pending",
@@ -73,7 +69,6 @@ let missions: Mission[] = [
   {
     id: "2",
     title: "Vacuum living room",
-    description: "",
     sectionId: "3",
     assignedToUserId: "2",
     status: "in_progress",
