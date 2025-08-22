@@ -219,13 +219,34 @@ export default function Dashboard() {
     <DashboardLayout>
       <div className="space-y-8">
         {/* Welcome Section */}
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            أهلاً بك، {user?.name}!
-          </h1>
-          <p className="text-muted-foreground">
-            إليك ما يحدث مع مهام التنظيف اليوم.
-          </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              أهلاً بك، {user?.name}!
+            </h1>
+            <p className="text-muted-foreground">
+              إليك ما يحدث مع مهام التنظيف اليوم.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleFixArabicText}
+            disabled={isFixingText}
+            className="btn-with-icon"
+          >
+            {isFixingText ? (
+              <>
+                <RefreshCcw className="h-4 w-4 animate-spin icon-ltr" />
+                جارٍ الإصلاح...
+              </>
+            ) : (
+              <>
+                <RefreshCcw className="h-4 w-4 icon-ltr" />
+                إصلاح النصوص المحرفة
+              </>
+            )}
+          </Button>
         </div>
 
         {/* Stats Cards */}
@@ -351,7 +372,7 @@ export default function Dashboard() {
                       onClick={handleCreateRoom}
                       disabled={!newRoom.name.trim()}
                     >
-                      إنشاء الغ��فة
+                      إنشاء الغرفة
                     </Button>
                   </DialogFooter>
                 </DialogContent>
