@@ -211,6 +211,99 @@ export default function Login() {
               </Button>
             </form>
 
+            <div className="mt-4 pt-4 border-t">
+              <Dialog open={showCreateUser} onOpenChange={setShowCreateUser}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    <UserPlus className="mr-2 h-4 w-4 icon-ltr" />
+                    إنشاء عضو جديد
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>إنشاء عضو جديد</DialogTitle>
+                    <DialogDescription>
+                      أضف عضواً جديداً للعائلة لتسجيل الدخول والمشاركة في مهام التنظيف.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleCreateUser} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new-user-name">الاسم</Label>
+                      <Input
+                        id="new-user-name"
+                        placeholder="اسم العضو الجديد"
+                        value={newUser.name}
+                        onChange={(e) =>
+                          setNewUser({ ...newUser, name: e.target.value })
+                        }
+                        required
+                        disabled={isCreatingUser}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="new-user-password">كلمة المرور</Label>
+                      <Input
+                        id="new-user-password"
+                        type="password"
+                        placeholder="كلمة المرور"
+                        value={newUser.password}
+                        onChange={(e) =>
+                          setNewUser({ ...newUser, password: e.target.value })
+                        }
+                        required
+                        disabled={isCreatingUser}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="new-user-role">الدور</Label>
+                      <Select
+                        value={newUser.role}
+                        onValueChange={(value: "admin" | "member") =>
+                          setNewUser({ ...newUser, role: value })
+                        }
+                        disabled={isCreatingUser}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="member">عضو</SelectItem>
+                          <SelectItem value="admin">مدير</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <DialogFooter className="gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowCreateUser(false)}
+                        disabled={isCreatingUser}
+                      >
+                        إلغاء
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={isCreatingUser || !newUser.name || !newUser.password}
+                      >
+                        {isCreatingUser ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin icon-ltr" />
+                            جارٍ الإنشاء...
+                          </>
+                        ) : (
+                          "إنشاء العضو"
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+
           </CardContent>
         </Card>
       </div>
