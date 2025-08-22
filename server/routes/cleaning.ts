@@ -115,12 +115,17 @@ export const handleDeleteRoom: RequestHandler = (req, res) => {
       return res.status(404).json({ error: "Room not found" });
     }
 
-    // Also delete associated sections and missions
-    sections = sections.filter((s) => s.roomId !== roomId);
-    missions = missions.filter(
-      (m) => !sections.find((s) => s.id === m.sectionId && s.roomId === roomId),
-    );
+    // Get sections to delete first
+    const sectionsToDelete = sections.filter((s) => s.roomId === roomId);
+    const sectionIdsToDelete = sectionsToDelete.map((s) => s.id);
 
+    // Delete associated missions first
+    missions = missions.filter((m) => !sectionIdsToDelete.includes(m.sectionId));
+
+    // Then delete associated sections
+    sections = sections.filter((s) => s.roomId !== roomId);
+
+    // Finally delete the room
     rooms.splice(roomIndex, 1);
     res.status(204).send();
   } catch (error) {
