@@ -91,7 +91,7 @@ export default function Room() {
       },
       {
         id: "3",
-        name: "الحوض والأطباق",
+        name: "الحو�� والأطباق",
         description: "منطقة الحوض وغسل الأطباق",
         roomId: roomId || "1",
         createdAt: new Date(),
@@ -154,17 +154,42 @@ export default function Room() {
   }, [roomId]);
 
   const handleCreateSection = async () => {
-    const section: Section = {
-      id: Date.now().toString(),
-      name: newSection.name,
-      description: newSection.description,
-      roomId: roomId || "1",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setSections([...sections, section]);
-    setNewSection({ name: "", description: "" });
-    setIsCreateSectionOpen(false);
+    try {
+      const response = await fetch("/api/sections", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newSection.name,
+          description: newSection.description,
+          roomId: roomId || "1",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("فشل في إنشاء القسم");
+      }
+
+      const createdSection = await response.json();
+      setSections([...sections, createdSection]);
+      setNewSection({ name: "", description: "" });
+      setIsCreateSectionOpen(false);
+    } catch (error) {
+      console.error("Error creating section:", error);
+      // Fallback to local creation if API fails
+      const section: Section = {
+        id: Date.now().toString(),
+        name: newSection.name,
+        description: newSection.description,
+        roomId: roomId || "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setSections([...sections, section]);
+      setNewSection({ name: "", description: "" });
+      setIsCreateSectionOpen(false);
+    }
   };
 
   const handleCreateMission = async () => {
@@ -477,7 +502,7 @@ export default function Room() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="low">منخفضة</SelectItem>
+                          <SelectItem value="low">من��فضة</SelectItem>
                           <SelectItem value="medium">متوسطة</SelectItem>
                           <SelectItem value="high">عالية</SelectItem>
                         </SelectContent>
