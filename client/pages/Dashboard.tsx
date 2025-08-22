@@ -346,20 +346,6 @@ export default function Dashboard() {
                         }
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="room-description">الوصف (اختياري)</Label>
-                      <Textarea
-                        id="room-description"
-                        placeholder="وصف مختصر للغرفة"
-                        value={newRoom.description}
-                        onChange={(e) =>
-                          setNewRoom({
-                            ...newRoom,
-                            description: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
                   </div>
                   <DialogFooter className="gap-2">
                     <Button
