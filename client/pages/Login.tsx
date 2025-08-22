@@ -17,6 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Loader2, Home, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@shared/api";
@@ -57,6 +66,42 @@ export default function Login() {
 
     fetchUsers();
   }, []);
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUser.name || !newUser.password) {
+      setError("يرجى ملء جميع الحقول");
+      return;
+    }
+
+    setIsCreatingUser(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "خطأ في إنشاء المستخدم");
+      }
+
+      const createdUser = await response.json();
+      setUsers([...users, createdUser]);
+      setNewUser({ name: "", password: "", role: "member" });
+      setShowCreateUser(false);
+      setSelectedUserId(createdUser.id);
+    } catch (error: any) {
+      setError(error.message || "خطأ في إنشاء المستخدم");
+    } finally {
+      setIsCreatingUser(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
