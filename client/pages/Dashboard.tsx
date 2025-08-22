@@ -113,12 +113,11 @@ export default function Dashboard() {
     const room: Room = {
       id: Date.now().toString(),
       name: newRoom.name,
-      description: newRoom.description,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     setRooms([...rooms, room]);
-    setNewRoom({ name: "", description: "" });
+    setNewRoom({ name: "" });
     setIsCreateRoomOpen(false);
   };
 
