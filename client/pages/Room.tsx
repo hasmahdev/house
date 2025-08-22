@@ -179,13 +179,12 @@ export default function Room() {
       const section: Section = {
         id: Date.now().toString(),
         name: newSection.name,
-        description: newSection.description,
         roomId: roomId || "1",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       setSections([...sections, section]);
-      setNewSection({ name: "", description: "" });
+      setNewSection({ name: "" });
       setIsCreateSectionOpen(false);
     }
   };
