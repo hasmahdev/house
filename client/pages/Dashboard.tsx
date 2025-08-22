@@ -137,6 +137,31 @@ export default function Dashboard() {
     );
   };
 
+  const handleFixArabicText = () => {
+    setIsFixingText(true);
+
+    setTimeout(() => {
+      const result = scanAndFixCorruptedText();
+
+      if (result.found) {
+        toast({
+          title: "تم إصلاح النص العربي",
+          description: `تم إصلاح ${result.fixed} نص محرف بنجاح`,
+        });
+      } else {
+        toast({
+          title: "لم يتم العثور على نصوص محرفة",
+          description: "جميع النصوص العربية تبدو صحيحة",
+        });
+      }
+
+      setIsFixingText(false);
+
+      // Refresh the page to reflect server-side fixes
+      window.location.reload();
+    }, 1000);
+  };
+
   const getStatusIcon = (status: Mission["status"]) => {
     switch (status) {
       case "completed":
@@ -326,7 +351,7 @@ export default function Dashboard() {
                       onClick={handleCreateRoom}
                       disabled={!newRoom.name.trim()}
                     >
-                      إنشاء الغرفة
+                      إنشاء الغ��فة
                     </Button>
                   </DialogFooter>
                 </DialogContent>
