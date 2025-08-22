@@ -403,20 +403,6 @@ export default function Room() {
                         }
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="mission-description">الوصف</Label>
-                      <Textarea
-                        id="mission-description"
-                        placeholder="وصف مفصل للمهمة"
-                        value={newMission.description}
-                        onChange={(e) =>
-                          setNewMission({
-                            ...newMission,
-                            description: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="mission-section">القسم</Label>
