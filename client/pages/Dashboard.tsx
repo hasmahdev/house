@@ -30,6 +30,7 @@ import {
   Clock,
   AlertCircle,
   ChevronLeft,
+  RefreshCcw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Room, Mission } from "@shared/api";
@@ -47,7 +48,7 @@ export default function Dashboard() {
       {
         id: "1",
         name: "المطبخ",
-        description: "منطقة الطبخ وتناول الطعام الرئيسية",
+        description: "منطقة الطبخ وتناول الطعام ال��ئيسية",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
