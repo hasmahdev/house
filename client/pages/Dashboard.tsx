@@ -34,6 +34,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Room, Mission } from "@shared/api";
+import { scanAndFixCorruptedText } from "@/lib/arabic-utils";
+import { toast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -41,6 +43,7 @@ export default function Dashboard() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
   const [newRoom, setNewRoom] = useState({ name: "", description: "" });
+  const [isFixingText, setIsFixingText] = useState(false);
 
   // Mock data for now - will be replaced with API calls
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function Dashboard() {
       {
         id: "1",
         name: "المطبخ",
-        description: "منطقة الطبخ وتناول الطعام ال��ئيسية",
+        description: "منطقة الطبخ وتناول الطعام الرئيسية",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
