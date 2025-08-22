@@ -14,21 +14,18 @@ let rooms: Room[] = [
   {
     id: "1",
     name: "Kitchen",
-    description: "",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "2",
     name: "Living Room",
-    description: "",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "3",
     name: "Bathroom",
-    description: "",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
