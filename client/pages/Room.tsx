@@ -212,7 +212,6 @@ export default function Room() {
       setMissions([...missions, createdMission]);
       setNewMission({
         title: "",
-        description: "",
         sectionId: "",
         assignedToUserId: "",
         priority: "medium",
@@ -469,7 +468,7 @@ export default function Room() {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="اختر مستخدم" />
+                            <SelectValue placeholder="اختر ��ستخدم" />
                           </SelectTrigger>
                           <SelectContent>
                             {user?.role === "admin" && (
