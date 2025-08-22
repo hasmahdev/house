@@ -353,22 +353,6 @@ export default function Room() {
                         }
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="section-description">
-                        الوصف (اختياري)
-                      </Label>
-                      <Textarea
-                        id="section-description"
-                        placeholder="وصف مختصر للقسم"
-                        value={newSection.description}
-                        onChange={(e) =>
-                          setNewSection({
-                            ...newSection,
-                            description: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
                   </div>
                   <DialogFooter className="gap-2">
                     <Button
