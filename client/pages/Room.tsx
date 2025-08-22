@@ -223,7 +223,6 @@ export default function Room() {
       const mission: Mission = {
         id: Date.now().toString(),
         title: newMission.title,
-        description: newMission.description,
         sectionId: newMission.sectionId,
         assignedToUserId: newMission.assignedToUserId,
         status: "pending",
@@ -234,7 +233,6 @@ export default function Room() {
       setMissions([...missions, mission]);
       setNewMission({
         title: "",
-        description: "",
         sectionId: "",
         assignedToUserId: "",
         priority: "medium",
