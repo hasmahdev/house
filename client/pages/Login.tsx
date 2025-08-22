@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Home } from "lucide-react";
+import { Loader2, Home, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@shared/api";
 
@@ -27,6 +27,9 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [users, setUsers] = useState<User[]>([]);
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [newUser, setNewUser] = useState({ name: "", password: "", role: "member" as "admin" | "member" });
   const { login } = useAuth();
   const navigate = useNavigate();
 
