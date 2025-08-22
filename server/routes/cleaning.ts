@@ -58,7 +58,7 @@ let sections: Section[] = [
 let missions: Mission[] = [
   {
     id: "1",
-    title: "Clean kitchen counters",
+    title: "تنظيف كاونترات المطبخ",
     sectionId: "1",
     assignedToUserId: "2",
     status: "pending",
@@ -68,7 +68,7 @@ let missions: Mission[] = [
   },
   {
     id: "2",
-    title: "Vacuum living room",
+    title: "تنظيف غرفة المعيشة بالمكنسة",
     sectionId: "3",
     assignedToUserId: "2",
     status: "in_progress",
