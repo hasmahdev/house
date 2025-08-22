@@ -198,7 +198,6 @@ export default function Room() {
         },
         body: JSON.stringify({
           title: newMission.title,
-          description: newMission.description,
           sectionId: newMission.sectionId,
           assignedToUserId: newMission.assignedToUserId,
           priority: newMission.priority,
