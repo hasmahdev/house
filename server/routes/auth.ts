@@ -14,7 +14,7 @@ const users: User[] = [
   },
   {
     id: "2",
-    name: "ع��و العائلة",
+    name: "عضو العائلة",
     role: "member",
     password: "member123", // In production, this would be hashed
     createdAt: new Date(),
