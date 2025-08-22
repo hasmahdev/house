@@ -506,9 +506,6 @@ export default function Room() {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-xl">{section.name}</CardTitle>
-                      {section.description && (
-                        <CardDescription>{section.description}</CardDescription>
-                      )}
                     </div>
                     <Badge variant="outline">
                       {sectionMissions.length} مهمة
