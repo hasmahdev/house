@@ -94,7 +94,6 @@ export const handleCreateRoom: RequestHandler = (req, res) => {
     const newRoom: Room = {
       id: (rooms.length + 1).toString(),
       name,
-      description: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -155,7 +154,6 @@ export const handleCreateSection: RequestHandler = (req, res) => {
     const newSection: Section = {
       id: (sections.length + 1).toString(),
       name,
-      description: "",
       roomId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -208,7 +206,6 @@ export const handleCreateMission: RequestHandler = (req, res) => {
     const newMission: Mission = {
       id: (missions.length + 1).toString(),
       title,
-      description: "",
       sectionId,
       assignedToUserId,
       status: "pending",
