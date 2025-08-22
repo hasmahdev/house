@@ -377,11 +377,6 @@ export default function Dashboard() {
                         </div>
                         <div>
                           <CardTitle className="text-lg">{room.name}</CardTitle>
-                          {room.description && (
-                            <CardDescription>
-                              {room.description}
-                            </CardDescription>
-                          )}
                         </div>
                       </div>
                       <ChevronLeft className="h-5 w-5 text-muted-foreground rtl-flip" />
