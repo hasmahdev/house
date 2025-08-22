@@ -410,11 +410,6 @@ export default function Dashboard() {
                         >
                           {mission.title}
                         </h4>
-                        {mission.description && (
-                          <p className="text-sm text-muted-foreground">
-                            {mission.description}
-                          </p>
-                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
