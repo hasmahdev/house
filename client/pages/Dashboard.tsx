@@ -42,7 +42,7 @@ export default function Dashboard() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
-  const [newRoom, setNewRoom] = useState({ name: "", description: "" });
+  const [newRoom, setNewRoom] = useState({ name: "" });
   const [isFixingText, setIsFixingText] = useState(false);
 
   // Mock data for now - will be replaced with API calls
