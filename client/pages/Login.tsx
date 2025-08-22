@@ -17,7 +17,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Home } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Loader2, Home, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@shared/api";
 
@@ -27,6 +36,9 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [users, setUsers] = useState<User[]>([]);
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [newUser, setNewUser] = useState({ name: "", password: "", role: "member" as "admin" | "member" });
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -54,6 +66,42 @@ export default function Login() {
 
     fetchUsers();
   }, []);
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUser.name || !newUser.password) {
+      setError("يرجى ملء جميع الحقول");
+      return;
+    }
+
+    setIsCreatingUser(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "خطأ في إنشاء المستخدم");
+      }
+
+      const createdUser = await response.json();
+      setUsers([...users, createdUser]);
+      setNewUser({ name: "", password: "", role: "member" });
+      setShowCreateUser(false);
+      setSelectedUserId(createdUser.id);
+    } catch (error: any) {
+      setError(error.message || "خطأ في إنشاء المستخدم");
+    } finally {
+      setIsCreatingUser(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,6 +210,99 @@ export default function Login() {
                 )}
               </Button>
             </form>
+
+            <div className="mt-4 pt-4 border-t">
+              <Dialog open={showCreateUser} onOpenChange={setShowCreateUser}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    <UserPlus className="mr-2 h-4 w-4 icon-ltr" />
+                    إنشاء عضو جديد
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>إنشاء عضو جديد</DialogTitle>
+                    <DialogDescription>
+                      أضف عضواً جديداً للعائلة لتسجيل الدخول والمشاركة في مهام التنظيف.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleCreateUser} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new-user-name">الاسم</Label>
+                      <Input
+                        id="new-user-name"
+                        placeholder="اسم العضو الجديد"
+                        value={newUser.name}
+                        onChange={(e) =>
+                          setNewUser({ ...newUser, name: e.target.value })
+                        }
+                        required
+                        disabled={isCreatingUser}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="new-user-password">كلمة المرور</Label>
+                      <Input
+                        id="new-user-password"
+                        type="password"
+                        placeholder="كلمة المرور"
+                        value={newUser.password}
+                        onChange={(e) =>
+                          setNewUser({ ...newUser, password: e.target.value })
+                        }
+                        required
+                        disabled={isCreatingUser}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="new-user-role">الدور</Label>
+                      <Select
+                        value={newUser.role}
+                        onValueChange={(value: "admin" | "member") =>
+                          setNewUser({ ...newUser, role: value })
+                        }
+                        disabled={isCreatingUser}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="member">عضو</SelectItem>
+                          <SelectItem value="admin">مدير</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <DialogFooter className="gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowCreateUser(false)}
+                        disabled={isCreatingUser}
+                      >
+                        إلغاء
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={isCreatingUser || !newUser.name || !newUser.password}
+                      >
+                        {isCreatingUser ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin icon-ltr" />
+                            جارٍ الإنشاء...
+                          </>
+                        ) : (
+                          "إنشاء العضو"
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
 
           </CardContent>
         </Card>

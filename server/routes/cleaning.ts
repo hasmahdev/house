@@ -13,22 +13,19 @@ import {
 let rooms: Room[] = [
   {
     id: "1",
-    name: "Kitchen",
-    description: "",
+    name: "المطبخ",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "2",
-    name: "Living Room",
-    description: "",
+    name: "غرفة المعيشة",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "3",
-    name: "Bathroom",
-    description: "",
+    name: "الحمام",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -37,24 +34,21 @@ let rooms: Room[] = [
 let sections: Section[] = [
   {
     id: "1",
-    name: "Countertops",
-    description: "",
+    name: "الكاونترات",
     roomId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "2",
-    name: "Appliances",
-    description: "",
+    name: "الأجهزة",
     roomId: "1",
     createdAt: new Date(),
     updatedAt: new Date(),
   },
   {
     id: "3",
-    name: "Seating Area",
-    description: "",
+    name: "منطقة الجلوس",
     roomId: "2",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -64,8 +58,7 @@ let sections: Section[] = [
 let missions: Mission[] = [
   {
     id: "1",
-    title: "Clean kitchen counters",
-    description: "",
+    title: "تنظيف كاونترات المطبخ",
     sectionId: "1",
     assignedToUserId: "2",
     status: "pending",
@@ -75,8 +68,7 @@ let missions: Mission[] = [
   },
   {
     id: "2",
-    title: "Vacuum living room",
-    description: "",
+    title: "تنظيف غرفة المعيشة بالمكنسة",
     sectionId: "3",
     assignedToUserId: "2",
     status: "in_progress",
@@ -102,7 +94,6 @@ export const handleCreateRoom: RequestHandler = (req, res) => {
     const newRoom: Room = {
       id: (rooms.length + 1).toString(),
       name,
-      description: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -124,12 +115,17 @@ export const handleDeleteRoom: RequestHandler = (req, res) => {
       return res.status(404).json({ error: "Room not found" });
     }
 
-    // Also delete associated sections and missions
-    sections = sections.filter((s) => s.roomId !== roomId);
-    missions = missions.filter(
-      (m) => !sections.find((s) => s.id === m.sectionId && s.roomId === roomId),
-    );
+    // Get sections to delete first
+    const sectionsToDelete = sections.filter((s) => s.roomId === roomId);
+    const sectionIdsToDelete = sectionsToDelete.map((s) => s.id);
 
+    // Delete associated missions first
+    missions = missions.filter((m) => !sectionIdsToDelete.includes(m.sectionId));
+
+    // Then delete associated sections
+    sections = sections.filter((s) => s.roomId !== roomId);
+
+    // Finally delete the room
     rooms.splice(roomIndex, 1);
     res.status(204).send();
   } catch (error) {
@@ -163,7 +159,6 @@ export const handleCreateSection: RequestHandler = (req, res) => {
     const newSection: Section = {
       id: (sections.length + 1).toString(),
       name,
-      description: "",
       roomId,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -216,7 +211,6 @@ export const handleCreateMission: RequestHandler = (req, res) => {
     const newMission: Mission = {
       id: (missions.length + 1).toString(),
       title,
-      description: "",
       sectionId,
       assignedToUserId,
       status: "pending",

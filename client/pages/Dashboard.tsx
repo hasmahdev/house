@@ -30,16 +30,20 @@ import {
   Clock,
   AlertCircle,
   ChevronLeft,
+  RefreshCcw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Room, Mission } from "@shared/api";
+import { scanAndFixCorruptedText } from "@/lib/arabic-utils";
+import { toast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
-  const [newRoom, setNewRoom] = useState({ name: "", description: "" });
+  const [newRoom, setNewRoom] = useState({ name: "" });
+  const [isFixingText, setIsFixingText] = useState(false);
 
   // Mock data for now - will be replaced with API calls
   useEffect(() => {
@@ -109,12 +113,11 @@ export default function Dashboard() {
     const room: Room = {
       id: Date.now().toString(),
       name: newRoom.name,
-      description: newRoom.description,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     setRooms([...rooms, room]);
-    setNewRoom({ name: "", description: "" });
+    setNewRoom({ name: "" });
     setIsCreateRoomOpen(false);
   };
 
@@ -131,6 +134,31 @@ export default function Dashboard() {
           : m,
       ),
     );
+  };
+
+  const handleFixArabicText = () => {
+    setIsFixingText(true);
+
+    setTimeout(() => {
+      const result = scanAndFixCorruptedText();
+
+      if (result.found) {
+        toast({
+          title: "تم إصلاح النص العربي",
+          description: `تم إصلاح ${result.fixed} نص محرف بنجاح`,
+        });
+      } else {
+        toast({
+          title: "لم يتم العثور على نصوص محرفة",
+          description: "جميع النصوص العربية تبدو صحيحة",
+        });
+      }
+
+      setIsFixingText(false);
+
+      // Refresh the page to reflect server-side fixes
+      window.location.reload();
+    }, 1000);
   };
 
   const getStatusIcon = (status: Mission["status"]) => {
@@ -190,13 +218,34 @@ export default function Dashboard() {
     <DashboardLayout>
       <div className="space-y-8">
         {/* Welcome Section */}
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            أهلاً بك، {user?.name}!
-          </h1>
-          <p className="text-muted-foreground">
-            إليك ما يحدث مع مهام التنظيف اليوم.
-          </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              أهلاً بك، {user?.name}!
+            </h1>
+            <p className="text-muted-foreground">
+              إليك ما يحدث مع مهام التنظيف اليوم.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleFixArabicText}
+            disabled={isFixingText}
+            className="btn-with-icon"
+          >
+            {isFixingText ? (
+              <>
+                <RefreshCcw className="h-4 w-4 animate-spin icon-ltr" />
+                جارٍ الإصلاح...
+              </>
+            ) : (
+              <>
+                <RefreshCcw className="h-4 w-4 icon-ltr" />
+                إصلاح النصوص المحرفة
+              </>
+            )}
+          </Button>
         </div>
 
         {/* Stats Cards */}
@@ -296,20 +345,6 @@ export default function Dashboard() {
                         }
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="room-description">الوصف (اختياري)</Label>
-                      <Textarea
-                        id="room-description"
-                        placeholder="وصف مختصر للغرفة"
-                        value={newRoom.description}
-                        onChange={(e) =>
-                          setNewRoom({
-                            ...newRoom,
-                            description: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
                   </div>
                   <DialogFooter className="gap-2">
                     <Button
@@ -342,11 +377,6 @@ export default function Dashboard() {
                         </div>
                         <div>
                           <CardTitle className="text-lg">{room.name}</CardTitle>
-                          {room.description && (
-                            <CardDescription>
-                              {room.description}
-                            </CardDescription>
-                          )}
                         </div>
                       </div>
                       <ChevronLeft className="h-5 w-5 text-muted-foreground rtl-flip" />
@@ -380,11 +410,6 @@ export default function Dashboard() {
                         >
                           {mission.title}
                         </h4>
-                        {mission.description && (
-                          <p className="text-sm text-muted-foreground">
-                            {mission.description}
-                          </p>
-                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">

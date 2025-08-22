@@ -52,10 +52,9 @@ export default function Room() {
   const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false);
   const [isCreateMissionOpen, setIsCreateMissionOpen] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState<string>("");
-  const [newSection, setNewSection] = useState({ name: "", description: "" });
+  const [newSection, setNewSection] = useState({ name: "" });
   const [newMission, setNewMission] = useState({
     title: "",
-    description: "",
     sectionId: "",
     assignedToUserId: "",
     priority: "medium" as "low" | "medium" | "high",
@@ -91,7 +90,7 @@ export default function Room() {
       },
       {
         id: "3",
-        name: "الحوض والأطباق",
+        name: "الحو�� والأطباق",
         description: "منطقة الحوض وغسل الأطباق",
         roomId: roomId || "1",
         createdAt: new Date(),
@@ -154,40 +153,92 @@ export default function Room() {
   }, [roomId]);
 
   const handleCreateSection = async () => {
-    const section: Section = {
-      id: Date.now().toString(),
-      name: newSection.name,
-      description: newSection.description,
-      roomId: roomId || "1",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setSections([...sections, section]);
-    setNewSection({ name: "", description: "" });
-    setIsCreateSectionOpen(false);
+    try {
+      const response = await fetch("/api/sections", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newSection.name,
+          roomId: roomId || "1",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("فشل في إنشاء القسم");
+      }
+
+      const createdSection = await response.json();
+      setSections([...sections, createdSection]);
+      setNewSection({ name: "" });
+      setIsCreateSectionOpen(false);
+    } catch (error) {
+      console.error("Error creating section:", error);
+      // Fallback to local creation if API fails
+      const section: Section = {
+        id: Date.now().toString(),
+        name: newSection.name,
+        roomId: roomId || "1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setSections([...sections, section]);
+      setNewSection({ name: "" });
+      setIsCreateSectionOpen(false);
+    }
   };
 
   const handleCreateMission = async () => {
-    const mission: Mission = {
-      id: Date.now().toString(),
-      title: newMission.title,
-      description: newMission.description,
-      sectionId: newMission.sectionId,
-      assignedToUserId: newMission.assignedToUserId,
-      status: "pending",
-      priority: newMission.priority,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setMissions([...missions, mission]);
-    setNewMission({
-      title: "",
-      description: "",
-      sectionId: "",
-      assignedToUserId: "",
-      priority: "medium",
-    });
-    setIsCreateMissionOpen(false);
+    try {
+      const response = await fetch("/api/missions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: newMission.title,
+          sectionId: newMission.sectionId,
+          assignedToUserId: newMission.assignedToUserId,
+          priority: newMission.priority,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("فشل في إنشاء المهمة");
+      }
+
+      const createdMission = await response.json();
+      setMissions([...missions, createdMission]);
+      setNewMission({
+        title: "",
+        sectionId: "",
+        assignedToUserId: "",
+        priority: "medium",
+      });
+      setIsCreateMissionOpen(false);
+    } catch (error) {
+      console.error("Error creating mission:", error);
+      // Fallback to local creation if API fails
+      const mission: Mission = {
+        id: Date.now().toString(),
+        title: newMission.title,
+        sectionId: newMission.sectionId,
+        assignedToUserId: newMission.assignedToUserId,
+        status: "pending",
+        priority: newMission.priority,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setMissions([...missions, mission]);
+      setNewMission({
+        title: "",
+        sectionId: "",
+        assignedToUserId: "",
+        priority: "medium",
+      });
+      setIsCreateMissionOpen(false);
+    }
   };
 
   const handleMissionToggle = (missionId: string, completed: boolean) => {
@@ -251,7 +302,7 @@ export default function Room() {
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowRight className="h-4 w-4 ml-2 rtl-flip" />
-              العودة للرئيسية
+              ال��ودة للرئيسية
             </Button>
           </Link>
           <div className="flex items-center gap-3">
@@ -285,7 +336,7 @@ export default function Room() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء قسم جديد</DialogTitle>
+                    <DialogTitle>إنشاء ��سم جديد</DialogTitle>
                     <DialogDescription>
                       أضف قسماً جديداً لتنظيم مهام التنظيف في {room.name}.
                     </DialogDescription>
@@ -299,22 +350,6 @@ export default function Room() {
                         value={newSection.name}
                         onChange={(e) =>
                           setNewSection({ ...newSection, name: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="section-description">
-                        الوصف (اختياري)
-                      </Label>
-                      <Textarea
-                        id="section-description"
-                        placeholder="وصف مختصر للقسم"
-                        value={newSection.description}
-                        onChange={(e) =>
-                          setNewSection({
-                            ...newSection,
-                            description: e.target.value,
-                          })
                         }
                       />
                     </div>
@@ -368,20 +403,6 @@ export default function Room() {
                         }
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="mission-description">الوصف</Label>
-                      <Textarea
-                        id="mission-description"
-                        placeholder="وصف مفصل للمهمة"
-                        value={newMission.description}
-                        onChange={(e) =>
-                          setNewMission({
-                            ...newMission,
-                            description: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="mission-section">القسم</Label>
@@ -415,7 +436,7 @@ export default function Room() {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="اختر مستخدم" />
+                            <SelectValue placeholder="اختر ��ستخدم" />
                           </SelectTrigger>
                           <SelectContent>
                             {user?.role === "admin" && (
@@ -444,7 +465,7 @@ export default function Room() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="low">منخفضة</SelectItem>
+                          <SelectItem value="low">من��فضة</SelectItem>
                           <SelectItem value="medium">متوسطة</SelectItem>
                           <SelectItem value="high">عالية</SelectItem>
                         </SelectContent>
@@ -485,9 +506,6 @@ export default function Room() {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-xl">{section.name}</CardTitle>
-                      {section.description && (
-                        <CardDescription>{section.description}</CardDescription>
-                      )}
                     </div>
                     <Badge variant="outline">
                       {sectionMissions.length} مهمة
@@ -498,7 +516,7 @@ export default function Room() {
                   {sectionMissions.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50 icon-ltr" />
-                      <p>لا توجد مهام في هذا القسم بعد</p>
+                      <p>لا توجد مهام في هذا القسم ب��د</p>
                       <p className="text-sm">أضف مهمة للبدء</p>
                     </div>
                   ) : (
@@ -531,11 +549,6 @@ export default function Room() {
                                   >
                                     {mission.title}
                                   </h4>
-                                  {mission.description && (
-                                    <p className="text-sm text-muted-foreground">
-                                      {mission.description}
-                                    </p>
-                                  )}
                                   <div className="flex items-center gap-2 mt-1">
                                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                       <Users className="h-3 w-3 icon-ltr" />

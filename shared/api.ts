@@ -15,7 +15,6 @@ export interface User {
 export interface Room {
   id: string;
   name: string;
-  description?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,7 +22,6 @@ export interface Room {
 export interface Section {
   id: string;
   name: string;
-  description?: string;
   roomId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -32,7 +30,6 @@ export interface Section {
 export interface Mission {
   id: string;
   title: string;
-  description?: string;
   sectionId: string;
   assignedToUserId: string;
   status: "pending" | "in_progress" | "completed";
@@ -62,18 +59,15 @@ export interface CreateUserRequest {
 
 export interface CreateRoomRequest {
   name: string;
-  description?: string;
 }
 
 export interface CreateSectionRequest {
   name: string;
-  description?: string;
   roomId: string;
 }
 
 export interface CreateMissionRequest {
   title: string;
-  description?: string;
   sectionId: string;
   assignedToUserId: string;
   priority: "low" | "medium" | "high";
@@ -82,7 +76,6 @@ export interface CreateMissionRequest {
 
 export interface UpdateMissionRequest {
   title?: string;
-  description?: string;
   assignedToUserId?: string;
   status?: "pending" | "in_progress" | "completed";
   priority?: "low" | "medium" | "high";
