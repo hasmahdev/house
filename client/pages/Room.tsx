@@ -168,26 +168,59 @@ export default function Room() {
   };
 
   const handleCreateMission = async () => {
-    const mission: Mission = {
-      id: Date.now().toString(),
-      title: newMission.title,
-      description: newMission.description,
-      sectionId: newMission.sectionId,
-      assignedToUserId: newMission.assignedToUserId,
-      status: "pending",
-      priority: newMission.priority,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setMissions([...missions, mission]);
-    setNewMission({
-      title: "",
-      description: "",
-      sectionId: "",
-      assignedToUserId: "",
-      priority: "medium",
-    });
-    setIsCreateMissionOpen(false);
+    try {
+      const response = await fetch("/api/missions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: newMission.title,
+          description: newMission.description,
+          sectionId: newMission.sectionId,
+          assignedToUserId: newMission.assignedToUserId,
+          priority: newMission.priority,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("فشل في إنشاء المهمة");
+      }
+
+      const createdMission = await response.json();
+      setMissions([...missions, createdMission]);
+      setNewMission({
+        title: "",
+        description: "",
+        sectionId: "",
+        assignedToUserId: "",
+        priority: "medium",
+      });
+      setIsCreateMissionOpen(false);
+    } catch (error) {
+      console.error("Error creating mission:", error);
+      // Fallback to local creation if API fails
+      const mission: Mission = {
+        id: Date.now().toString(),
+        title: newMission.title,
+        description: newMission.description,
+        sectionId: newMission.sectionId,
+        assignedToUserId: newMission.assignedToUserId,
+        status: "pending",
+        priority: newMission.priority,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setMissions([...missions, mission]);
+      setNewMission({
+        title: "",
+        description: "",
+        sectionId: "",
+        assignedToUserId: "",
+        priority: "medium",
+      });
+      setIsCreateMissionOpen(false);
+    }
   };
 
   const handleMissionToggle = (missionId: string, completed: boolean) => {
