@@ -59,18 +59,15 @@ export interface CreateUserRequest {
 
 export interface CreateRoomRequest {
   name: string;
-  description?: string;
 }
 
 export interface CreateSectionRequest {
   name: string;
-  description?: string;
   roomId: string;
 }
 
 export interface CreateMissionRequest {
   title: string;
-  description?: string;
   sectionId: string;
   assignedToUserId: string;
   priority: "low" | "medium" | "high";
@@ -79,7 +76,6 @@ export interface CreateMissionRequest {
 
 export interface UpdateMissionRequest {
   title?: string;
-  description?: string;
   assignedToUserId?: string;
   status?: "pending" | "in_progress" | "completed";
   priority?: "low" | "medium" | "high";
