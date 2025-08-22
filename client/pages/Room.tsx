@@ -91,7 +91,7 @@ export default function Room() {
       {
         id: "3",
         name: "الحو�� والأطباق",
-        description: "منطقة الحوض وغسل الأطباق",
+        description: "م��طقة الحوض وغسل الأطباق",
         roomId: roomId || "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -161,7 +161,6 @@ export default function Room() {
         },
         body: JSON.stringify({
           name: newSection.name,
-          description: newSection.description,
           roomId: roomId || "1",
         }),
       });
