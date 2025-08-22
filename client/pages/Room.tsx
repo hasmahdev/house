@@ -302,7 +302,7 @@ export default function Room() {
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowRight className="h-4 w-4 ml-2 rtl-flip" />
-              العودة للرئيسية
+              ال��ودة للرئيسية
             </Button>
           </Link>
           <div className="flex items-center gap-3">
@@ -549,11 +549,6 @@ export default function Room() {
                                   >
                                     {mission.title}
                                   </h4>
-                                  {mission.description && (
-                                    <p className="text-sm text-muted-foreground">
-                                      {mission.description}
-                                    </p>
-                                  )}
                                   <div className="flex items-center gap-2 mt-1">
                                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                       <Users className="h-3 w-3 icon-ltr" />
