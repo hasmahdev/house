@@ -52,10 +52,9 @@ export default function Room() {
   const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false);
   const [isCreateMissionOpen, setIsCreateMissionOpen] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState<string>("");
-  const [newSection, setNewSection] = useState({ name: "", description: "" });
+  const [newSection, setNewSection] = useState({ name: "" });
   const [newMission, setNewMission] = useState({
     title: "",
-    description: "",
     sectionId: "",
     assignedToUserId: "",
     priority: "medium" as "low" | "medium" | "high",
@@ -343,7 +342,7 @@ export default function Room() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء قسم جديد</DialogTitle>
+                    <DialogTitle>إنشاء ��سم جديد</DialogTitle>
                     <DialogDescription>
                       أضف قسماً جديداً لتنظيم مهام التنظيف في {room.name}.
                     </DialogDescription>
@@ -556,7 +555,7 @@ export default function Room() {
                   {sectionMissions.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50 icon-ltr" />
-                      <p>لا توجد مهام في هذا القسم بعد</p>
+                      <p>لا توجد مهام في هذا القسم ب��د</p>
                       <p className="text-sm">أضف مهمة للبدء</p>
                     </div>
                   ) : (
