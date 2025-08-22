@@ -91,7 +91,7 @@ export default function Room() {
       {
         id: "3",
         name: "الحو�� والأطباق",
-        description: "م��طقة الحوض وغسل الأطباق",
+        description: "منطقة الحوض وغسل الأطباق",
         roomId: roomId || "1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -171,7 +171,7 @@ export default function Room() {
 
       const createdSection = await response.json();
       setSections([...sections, createdSection]);
-      setNewSection({ name: "", description: "" });
+      setNewSection({ name: "" });
       setIsCreateSectionOpen(false);
     } catch (error) {
       console.error("Error creating section:", error);
