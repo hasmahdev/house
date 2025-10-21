@@ -282,7 +282,7 @@ export default function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map((room) => (
+            {Array.isArray(rooms) && rooms.map((room) => (
               <Link key={room.id} to={`/room/${room.id}`}>
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                   <CardHeader>
@@ -308,7 +308,7 @@ export default function Dashboard() {
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-foreground">{t('yourRecentMissions')}</h2>
           <div className="space-y-4">
-            {missions.slice(0, 5).map((mission) => (
+            {Array.isArray(missions) && missions.slice(0, 5).map((mission) => (
               <Card key={mission.id}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">

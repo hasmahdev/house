@@ -403,7 +403,7 @@ export default function Room() {
         </div>
 
         <div className="space-y-6">
-          {sections.map((section) => {
+          {Array.isArray(sections) && sections.map((section) => {
             const sectionMissions = getMissionsForSection(section.id);
             return (
               <Card key={section.id}>
@@ -426,7 +426,7 @@ export default function Room() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {sectionMissions.map((mission) => (
+                      {Array.isArray(sectionMissions) && sectionMissions.map((mission) => (
                         <Card
                           key={mission.id}
                           className="border-r-4 border-r-primary/20"

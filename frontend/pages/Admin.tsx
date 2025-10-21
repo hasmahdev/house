@@ -313,7 +313,7 @@ export default function Admin() {
                 </div>
 
                 <div className="space-y-3">
-                  {rooms.map((room) => (
+                  {Array.isArray(rooms) && rooms.map((room) => (
                     <Card
                       key={room.id}
                       className={`cursor-pointer transition-all hover:shadow-md ${
@@ -438,7 +438,7 @@ export default function Admin() {
                     </div>
 
                     <div className="space-y-3">
-                      {getRoomSections(selectedRoom.id).map((section) => (
+                      {Array.isArray(getRoomSections(selectedRoom.id)) && getRoomSections(selectedRoom.id).map((section) => (
                         <Card key={section.id}>
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between">
@@ -784,7 +784,7 @@ export default function Admin() {
             </div>
 
             <div className="grid gap-4">
-              {users.map((userData) => (
+              {Array.isArray(users) && users.map((userData) => (
                 <Card key={userData.id}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
