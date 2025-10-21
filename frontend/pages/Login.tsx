@@ -45,7 +45,7 @@ export default function Login() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/users");
+        const response = await fetch("https://house-api.hasmah.xyz/api/users");
         const userData = await response.json();
         setUsers(userData);
       } catch (error) {
@@ -67,7 +67,7 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/api/users", {
+      const response = await fetch("https://house-api.hasmah.xyz/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

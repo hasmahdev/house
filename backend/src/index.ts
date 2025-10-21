@@ -1,9 +1,12 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { handleDemo } from './routes/demo'
 import { handleLogin, handleGetUsers, handleCreateUser, handleDeleteUser } from './routes/auth'
 import { handleGetRooms, handleCreateRoom, handleDeleteRoom, handleGetSections, handleCreateSection, handleGetMissions, handleCreateMission, handleUpdateMission, handleDeleteMission } from './routes/cleaning'
 
 const app = new Hono<{ Bindings: Env }>()
+
+app.use('/api/*', cors())
 
 app.get('/api/ping', (c) => {
   const ping = c.env.PING_MESSAGE

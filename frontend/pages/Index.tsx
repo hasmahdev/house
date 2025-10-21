@@ -9,7 +9,7 @@ export default function Index() {
 
   const fetchDemo = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/demo");
+      const response = await fetch("https://house-api.hasmah.xyz/api/demo");
       const data = (await response.json()) as DemoResponse;
       setExampleFromServer(data.message);
     } catch (error) {

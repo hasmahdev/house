@@ -62,15 +62,15 @@ export default function Room() {
 
   const fetchRoomData = async () => {
     try {
-      const roomResponse = await fetch(`http://localhost:3000/api/rooms/${roomId}`);
+      const roomResponse = await fetch(`https://house-api.hasmah.xyz/api/rooms/${roomId}`);
       const roomData = await roomResponse.json();
       setRoom(roomData);
 
-      const sectionsResponse = await fetch(`http://localhost:3000/api/rooms/${roomId}/sections`);
+      const sectionsResponse = await fetch(`https://house-api.hasmah.xyz/api/rooms/${roomId}/sections`);
       const sectionsData = await sectionsResponse.json();
       setSections(sectionsData);
 
-      const missionsResponse = await fetch(`http://localhost:3000/api/missions`);
+      const missionsResponse = await fetch(`https://house-api.hasmah.xyz/api/missions`);
       const missionsData = await missionsResponse.json();
       setMissions(missionsData);
     } catch (error) {
@@ -80,7 +80,7 @@ export default function Room() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/users");
+      const response = await fetch("https://house-api.hasmah.xyz/api/users");
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -91,7 +91,7 @@ export default function Room() {
 
   const handleCreateSection = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/sections", {
+      const response = await fetch("https://house-api.hasmah.xyz/api/sections", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +117,7 @@ export default function Room() {
 
   const handleCreateMission = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/missions", {
+      const response = await fetch("https://house-api.hasmah.xyz/api/missions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
