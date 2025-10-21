@@ -90,92 +90,32 @@ export default function Admin() {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // Mock data - in production, these would be API calls
   useEffect(() => {
-    setUsers([
-      {
-        id: "1",
-        name: "ماما",
-        role: "admin",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        name: "عضو العائلة",
-        role: "member",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "3",
-        name: "أحمد محمد",
-        role: "member",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+    const fetchData = async () => {
+      try {
+        const [usersResponse, roomsResponse, sectionsResponse, missionsResponse] = await Promise.all([
+          fetch("https://house-api.hasmah.xyz/api/users"),
+          fetch("https://house-api.hasmah.xyz/api/rooms"),
+          fetch("https://house-api.hasmah.xyz/api/sections"),
+          fetch("https://house-api.hasmah.xyz/api/missions"),
+        ]);
 
-    setRooms([
-      {
-        id: "1",
-        name: "المطبخ",
-        description: "",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        name: "غرفة المعيشة",
-        description: "",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+        const usersData = await usersResponse.json();
+        const roomsData = await roomsResponse.json();
+        const sectionsData = await sectionsResponse.json();
+        const missionsData = await missionsResponse.json();
 
-    setSections([
-      {
-        id: "1",
-        name: "الكاونترات",
-        description: "",
-        roomId: "1",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        name: "الأجهزة",
-        description: "",
-        roomId: "1",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+        if (Array.isArray(usersData)) setUsers(usersData);
+        if (Array.isArray(roomsData)) setRooms(roomsData);
+        if (Array.isArray(sectionsData)) setSections(sectionsData);
+        if (Array.isArray(missionsData)) setMissions(missionsData);
 
-    setMissions([
-      {
-        id: "1",
-        title: "تنظيف كاونترات المطبخ",
-        description: "",
-        sectionId: "1",
-        assignedToUserId: "2",
-        status: "pending",
-        priority: "high",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        title: "تنظيف غرفة المعيشة بالمكنسة",
-        description: "",
-        sectionId: "2",
-        assignedToUserId: "3",
-        status: "in_progress",
-        priority: "medium",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Helper functions
