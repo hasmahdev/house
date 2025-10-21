@@ -69,11 +69,21 @@ export default function Room() {
 
       const sectionsResponse = await fetch(`https://house-api.hasmah.xyz/api/rooms/${roomId}/sections`);
       const sectionsData = await sectionsResponse.json();
-      setSections(sectionsData);
+      if (Array.isArray(sectionsData)) {
+        setSections(sectionsData);
+      } else {
+        console.error("Fetched sections data is not an array:", sectionsData);
+        setSections([]);
+      }
 
       const missionsResponse = await fetch(`https://house-api.hasmah.xyz/api/missions`);
       const missionsData = await missionsResponse.json();
-      setMissions(missionsData);
+      if (Array.isArray(missionsData)) {
+        setMissions(missionsData);
+      } else {
+        console.error("Fetched missions data is not an array:", missionsData);
+        setMissions([]);
+      }
     } catch (error) {
       console.error("Error fetching room data:", error);
     }
@@ -83,7 +93,12 @@ export default function Room() {
     try {
       const response = await fetch("https://house-api.hasmah.xyz/api/users");
       const data = await response.json();
-      setUsers(data);
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else {
+        console.error("Fetched users data is not an array:", data);
+        setUsers([]);
+      }
     } catch (error) {
       console.error("Error fetching users:", error);
     }
