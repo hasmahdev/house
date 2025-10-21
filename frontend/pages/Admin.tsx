@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -54,7 +53,7 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import { User, Mission, Room, Section } from "@shared/api";
+import { User, Mission, Room, Section } from "@/types/api";
 import { Navigate } from "react-router-dom";
 
 export default function Admin() {
@@ -276,13 +275,6 @@ export default function Admin() {
     return users.find((u) => u.id === userId)?.name || "مستخدم غير معروف";
   };
 
-  const getSectionName = (sectionId: string) => {
-    const section = sections.find((s) => s.id === sectionId);
-    if (!section) return "قسم غير معروف";
-    const room = rooms.find((r) => r.id === section.roomId);
-    return `${room?.name || "غرفة غير معروفة"} - ${section.name}`;
-  };
-
   const getPriorityColor = (priority: Mission["priority"]) => {
     switch (priority) {
       case "high":
@@ -302,17 +294,6 @@ export default function Admin() {
         return "متوسطة";
       default:
         return "منخفضة";
-    }
-  };
-
-  const getStatusText = (status: Mission["status"]) => {
-    switch (status) {
-      case "completed":
-        return "مكتملة";
-      case "in_progress":
-        return "قيد التنفيذ";
-      default:
-        return "في الانتظار";
     }
   };
 

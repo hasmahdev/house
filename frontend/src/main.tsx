@@ -1,4 +1,4 @@
-import "./global.css";
+import "../global.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
@@ -7,12 +7,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Admin from "./pages/Admin";
-import Room from "./pages/Room";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
+import Login from "../pages/Login";
+import Dashboard from "../pages/Dashboard";
+import Admin from "../pages/Admin";
+import Room from "../pages/Room";
+import Profile from "../pages/Profile";
+import NotFound from "../pages/NotFound";
 
 const queryClient = new QueryClient();
 

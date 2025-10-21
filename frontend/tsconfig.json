@@ -19,12 +19,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "types": ["vite/client"],
 
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
+      "@/types/*": ["./src/types/*"],
       "@/*": ["./*"]
     }
   },
-  "include": ["."]
+  "include": ["src", "components", "hooks", "lib", "pages", "vite.config.ts", "tailwind.config.ts"]
 }

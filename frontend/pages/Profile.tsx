@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Settings, Mail, Calendar, Shield } from "lucide-react";
+import { Settings, Calendar, Shield } from "lucide-react";
 
 export default function Profile() {
   const { user } = useAuth();

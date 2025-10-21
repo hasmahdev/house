@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -21,7 +20,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Plus,
@@ -33,7 +31,7 @@ import {
   RefreshCcw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Room, Mission } from "@shared/api";
+import { Room, Mission } from "@/types/api";
 import { scanAndFixCorruptedText } from "@/lib/arabic-utils";
 import { toast } from "@/hooks/use-toast";
 
@@ -159,17 +157,6 @@ export default function Dashboard() {
       // Refresh the page to reflect server-side fixes
       window.location.reload();
     }, 1000);
-  };
-
-  const getStatusIcon = (status: Mission["status"]) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-500 icon-ltr" />;
-      case "in_progress":
-        return <Clock className="h-4 w-4 text-blue-500 icon-ltr" />;
-      default:
-        return <AlertCircle className="h-4 w-4 text-orange-500 icon-ltr" />;
-    }
   };
 
   const getPriorityColor = (priority: Mission["priority"]) => {
