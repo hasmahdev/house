@@ -29,6 +29,7 @@ import {
 import { Loader2, Home, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@/types/api";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const [selectedUserId, setSelectedUserId] = useState("");
@@ -41,6 +42,7 @@ export default function Login() {
   const [newUser, setNewUser] = useState({ name: "", password: "", role: "member" as "admin" | "member" });
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -125,30 +127,30 @@ export default function Login() {
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
               <Home className="h-6 w-6 text-primary-foreground icon-ltr" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground">بيت نظيف</h1>
+            <h1 className="text-3xl font-bold text-foreground">{t('cleanHouse')}</h1>
           </div>
           <p className="text-muted-foreground">
-            إدارة مهام تنظيف المنزل بسهولة
+            {t('manageHouseCleaning')}
           </p>
         </div>
 
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-center">تسجيل الدخول</CardTitle>
+            <CardTitle className="text-center">{t('login')}</CardTitle>
             <CardDescription className="text-center">
-              اختر المستخدم وأدخل كلمة المرور للوصول إلى لوحة التحكم
+              {t('selectUserAndPassword')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="user-select">اختيار المستخدم</Label>
+                <Label htmlFor="user-select">{t('selectUser')}</Label>
                 <Select
                   value={selectedUserId}
                   onValueChange={setSelectedUserId}
                 >
                   <SelectTrigger id="user-select">
-                    <SelectValue placeholder="اختر مستخدم..." />
+                    <SelectValue placeholder={t('selectUserPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     {users.map((user) => (
@@ -156,7 +158,7 @@ export default function Login() {
                         <div className="flex items-center gap-2">
                           <span>{user.name}</span>
                           <span className="text-xs text-muted-foreground">
-                            ({user.role === "admin" ? "مدير" : "عضو"})
+                            ({user.role === "admin" ? t('admin') : t('member')})
                           </span>
                         </div>
                       </SelectItem>
@@ -166,11 +168,11 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">كلمة المرور</Label>
+                <Label htmlFor="password">{t('password')}</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="أدخل كلمة المرور"
+                  placeholder={t('enterPassword')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -192,10 +194,10 @@ export default function Login() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin icon-ltr" />
-                    جارٍ تسجيل الدخول...
+                    {t('loggingIn')}
                   </>
                 ) : (
-                  "تسجيل الدخول"
+                  t('login')
                 )}
               </Button>
             </form>
@@ -209,22 +211,22 @@ export default function Login() {
                     disabled={isLoading}
                   >
                     <UserPlus className="mr-2 h-4 w-4 icon-ltr" />
-                    إنشاء عضو جديد
+                    {t('createNewMember')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء عضو جديد</DialogTitle>
+                    <DialogTitle>{t('createNewMemberTitle')}</DialogTitle>
                     <DialogDescription>
-                      أضف عضواً جديداً للعائلة لتسجيل الدخول والمشاركة في مهام التنظيف.
+                      {t('createNewMemberDescription')}
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleCreateUser} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="new-user-name">الاسم</Label>
+                      <Label htmlFor="new-user-name">{t('name')}</Label>
                       <Input
                         id="new-user-name"
-                        placeholder="اسم العضو الجديد"
+                        placeholder={t('newMemberName')}
                         value={newUser.name}
                         onChange={(e) =>
                           setNewUser({ ...newUser, name: e.target.value })
@@ -234,11 +236,11 @@ export default function Login() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="new-user-password">كلمة المرور</Label>
+                      <Label htmlFor="new-user-password">{t('password')}</Label>
                       <Input
                         id="new-user-password"
                         type="password"
-                        placeholder="كلمة المرور"
+                        placeholder={t('password')}
                         value={newUser.password}
                         onChange={(e) =>
                           setNewUser({ ...newUser, password: e.target.value })
@@ -248,7 +250,7 @@ export default function Login() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="new-user-role">الدور</Label>
+                      <Label htmlFor="new-user-role">{t('role')}</Label>
                       <Select
                         value={newUser.role}
                         onValueChange={(value: "admin" | "member") =>
@@ -260,8 +262,8 @@ export default function Login() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="member">عضو</SelectItem>
-                          <SelectItem value="admin">مدير</SelectItem>
+                          <SelectItem value="member">{t('member')}</SelectItem>
+                          <SelectItem value="admin">{t('admin')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -272,7 +274,7 @@ export default function Login() {
                         onClick={() => setShowCreateUser(false)}
                         disabled={isCreatingUser}
                       >
-                        إلغاء
+                        {t('cancel')}
                       </Button>
                       <Button
                         type="submit"
@@ -281,10 +283,10 @@ export default function Login() {
                         {isCreatingUser ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin icon-ltr" />
-                            جارٍ الإنشاء...
+                            {t('creating')}
                           </>
                         ) : (
-                          "إنشاء العضو"
+                          t('createMember')
                         )}
                       </Button>
                     </DialogFooter>

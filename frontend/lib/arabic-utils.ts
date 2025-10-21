@@ -37,7 +37,7 @@ export function fixCorruptedArabicText(text: string): string {
 }
 
 /**
- * Scans for corrupted Arabic text in the DOM
+ * Scans for corrupted Arabic text in the DOM and fixes it
  */
 export function scanAndFixCorruptedText(): { found: boolean; fixed: number } {
   const textNodes: Text[] = [];
@@ -74,3 +74,8 @@ export function scanAndFixCorruptedText(): { found: boolean; fixed: number } {
     fixed
   };
 }
+
+// Automatically scan and fix on page load
+window.addEventListener('load', () => {
+  scanAndFixCorruptedText();
+});

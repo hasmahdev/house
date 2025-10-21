@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Home, Users, LogOut, Shield } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -20,6 +21,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -27,11 +29,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const navigation = [
-    { name: "الرئيسية", href: "/dashboard", icon: Home },
+    { name: t('main'), href: "/dashboard", icon: Home },
     ...(user?.role === "admin"
-      ? [{ name: "لوحة الإدارة", href: "/admin", icon: Shield }]
+      ? [{ name: t('adminPanelNav'), href: "/admin", icon: Shield }]
       : []),
-    { name: "الملف الشخصي", href: "/profile", icon: Users },
+    { name: t('profile'), href: "/profile", icon: Users },
   ];
 
   return (
@@ -46,7 +48,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Home className="h-4 w-4 text-primary-foreground icon-ltr" />
               </div>
               <span className="text-xl font-bold text-foreground">
-                بيت نظيف
+                {t('cleanHouse')}
               </span>
             </Link>
 
@@ -87,7 +89,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <div className="flex flex-col space-y-1 leading-none">
                     <p className="font-medium">{user?.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {user?.role === "admin" ? "مدير" : "عضو"}
+                      {user?.role === "admin" ? t('admin') : t('member')}
                     </p>
                   </div>
                 </div>
@@ -95,7 +97,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <DropdownMenuItem asChild>
                   <Link to="/profile" className="cursor-pointer">
                     <Users className="ml-2 h-4 w-4 icon-ltr" />
-                    الملف الشخصي
+                    {t('profile')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -104,7 +106,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   className="cursor-pointer"
                 >
                   <LogOut className="ml-2 h-4 w-4 icon-ltr" />
-                  تسجيل الخروج
+                  {t('logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

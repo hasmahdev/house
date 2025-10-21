@@ -36,10 +36,12 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Room as RoomType, Section, Mission, User } from "@/types/api";
+import { useTranslation } from "react-i18next";
 
 export default function Room() {
   const { roomId } = useParams<{ roomId: string }>();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [room, setRoom] = useState<RoomType | null>(null);
   const [sections, setSections] = useState<Section[]>([]);
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -195,7 +197,7 @@ export default function Room() {
   if (!room) {
     return (
       <DashboardLayout>
-        <div className="text-center">الغرفة غير موجودة</div>
+        <div className="text-center">{t('roomNotFound')}</div>
       </DashboardLayout>
     );
   }
@@ -207,7 +209,7 @@ export default function Room() {
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowRight className="h-4 w-4 ml-2 rtl-flip" />
-              العودة للرئيسية
+              {t('backToMain')}
             </Button>
           </Link>
           <div className="flex items-center gap-3">
@@ -235,22 +237,22 @@ export default function Room() {
                 <DialogTrigger asChild>
                   <Button>
                     <Plus className="ml-2 h-4 w-4 icon-ltr" />
-                    إضافة قسم
+                    {t('addSection')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء قسم جديد</DialogTitle>
+                    <DialogTitle>{t('createNewSectionIn', { roomName: room.name })}</DialogTitle>
                     <DialogDescription>
-                      أضف قسماً جديداً لتنظيم مهام التنظيف في {room.name}.
+                      {t('addNewSectionToOrganize')}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="section-name">اسم القسم</Label>
+                      <Label htmlFor="section-name">{t('sectionName')}</Label>
                       <Input
                         id="section-name"
-                        placeholder="مثل: الكاونترات، الأجهزة"
+                        placeholder={t('sectionNamePlaceholder')}
                         value={newSection.name}
                         onChange={(e) =>
                           setNewSection({ ...newSection, name: e.target.value })
@@ -263,13 +265,13 @@ export default function Room() {
                       variant="outline"
                       onClick={() => setIsCreateSectionOpen(false)}
                     >
-                      إلغاء
+                      {t('cancel')}
                     </Button>
                     <Button
                       onClick={handleCreateSection}
                       disabled={!newSection.name.trim()}
                     >
-                      إنشاء القسم
+                      {t('createSection')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -282,22 +284,22 @@ export default function Room() {
                 <DialogTrigger asChild>
                   <Button variant="outline">
                     <Plus className="ml-2 h-4 w-4 icon-ltr" />
-                    إضافة مهمة
+                    {t('addMission')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء مهمة جديدة</DialogTitle>
+                    <DialogTitle>{t('createNewMission')}</DialogTitle>
                     <DialogDescription>
-                      أضف مهمة تنظيف جديدة لـ {room.name}.
+                      {t('addNewMissionTo', { roomName: room.name })}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="mission-title">العنوان</Label>
+                      <Label htmlFor="mission-title">{t('title')}</Label>
                       <Input
                         id="mission-title"
-                        placeholder="عنوان المهمة"
+                        placeholder={t('missionTitlePlaceholder')}
                         value={newMission.title}
                         onChange={(e) =>
                           setNewMission({
@@ -309,7 +311,7 @@ export default function Room() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="mission-section">القسم</Label>
+                        <Label htmlFor="mission-section">{t('section')}</Label>
                         <Select
                           value={newMission.sectionId}
                           onValueChange={(value) =>
@@ -317,7 +319,7 @@ export default function Room() {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="اختر قسم" />
+                            <SelectValue placeholder={t('selectSection')} />
                           </SelectTrigger>
                           <SelectContent>
                             {sections.map((section) => (
@@ -329,7 +331,7 @@ export default function Room() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="mission-user">تعيين إلى</Label>
+                        <Label htmlFor="mission-user">{t('assignTo')}</Label>
                         <Select
                           value={newMission.assignedToUserId}
                           onValueChange={(value) =>
@@ -340,12 +342,12 @@ export default function Room() {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="اختر مستخدم" />
+                            <SelectValue placeholder={t('selectUser')} />
                           </SelectTrigger>
                           <SelectContent>
                             {user?.role === "admin" && (
                               <SelectItem value={user.id}>
-                                {user.name} (أنت)
+                                {user.name} {t('you')}
                               </SelectItem>
                             )}
                             {users.map((u) => (
@@ -358,7 +360,7 @@ export default function Room() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="mission-priority">الأولوية</Label>
+                      <Label htmlFor="mission-priority">{t('priority')}</Label>
                       <Select
                         value={newMission.priority}
                         onValueChange={(value: "low" | "medium" | "high") =>
@@ -369,9 +371,9 @@ export default function Room() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="low">منخفضة</SelectItem>
-                          <SelectItem value="medium">متوسطة</SelectItem>
-                          <SelectItem value="high">عالية</SelectItem>
+                          <SelectItem value="low">{t('low')}</SelectItem>
+                          <SelectItem value="medium">{t('medium')}</SelectItem>
+                          <SelectItem value="high">{t('high')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -381,7 +383,7 @@ export default function Room() {
                       variant="outline"
                       onClick={() => setIsCreateMissionOpen(false)}
                     >
-                      إلغاء
+                      {t('cancel')}
                     </Button>
                     <Button
                       onClick={handleCreateMission}
@@ -391,7 +393,7 @@ export default function Room() {
                         !newMission.assignedToUserId
                       }
                     >
-                      إنشاء المهمة
+                      {t('createMission')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -411,7 +413,7 @@ export default function Room() {
                       <CardTitle className="text-xl">{section.name}</CardTitle>
                     </div>
                     <Badge variant="outline">
-                      {sectionMissions.length} مهمة
+                      {sectionMissions.length} {t('mission')}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -419,8 +421,8 @@ export default function Room() {
                   {sectionMissions.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50 icon-ltr" />
-                      <p>لا توجد مهام في هذا القسم بعد</p>
-                      <p className="text-sm">أضف مهمة للبدء</p>
+                      <p>{t('noMissionsInSection')}</p>
+                      <p className="text-sm">{t('addMissionToStart')}</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -481,14 +483,14 @@ export default function Room() {
             <Card>
               <CardContent className="p-8 text-center">
                 <Home className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50 icon-ltr" />
-                <h3 className="text-lg font-medium mb-2">لا توجد أقسام بعد</h3>
+                <h3 className="text-lg font-medium mb-2">{t('noSectionsYet')}</h3>
                 <p className="text-muted-foreground mb-4">
-                  أنشئ أقساماً لتنظيم مهام التنظيف في {room.name}
+                  {t('createSectionsToOrganize', { roomName: room.name })}
                 </p>
                 {user?.role === "admin" && (
                   <Button onClick={() => setIsCreateSectionOpen(true)}>
                     <Plus className="ml-2 h-4 w-4 icon-ltr" />
-                    إنشاء أول قسم
+                    {t('createFirstSection')}
                   </Button>
                 )}
               </CardContent>

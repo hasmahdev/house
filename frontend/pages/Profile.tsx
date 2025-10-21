@@ -15,9 +15,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Settings, Calendar, Shield } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Profile() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -48,9 +50,9 @@ export default function Profile() {
     <DashboardLayout>
       <div className="space-y-8 max-w-2xl">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">الملف الشخصي</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t('profile')}</h1>
           <p className="text-muted-foreground">
-            إدارة إعدادات الحساب والتفضيلات
+            {t('manageAccountSettings')}
           </p>
         </div>
 
@@ -70,7 +72,7 @@ export default function Profile() {
                     variant={user.role === "admin" ? "default" : "secondary"}
                   >
                     <Shield className="h-3 w-3 ml-1 icon-ltr" />
-                    {user.role === "admin" ? "مدير" : "عضو"}
+                    {user.role === "admin" ? t('admin') : t('member')}
                   </Badge>
                 </div>
               </div>
@@ -82,19 +84,19 @@ export default function Profile() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>معلومات الحساب</CardTitle>
-              <CardDescription>تحديث معلوماتك الشخصية</CardDescription>
+              <CardTitle>{t('accountInformation')}</CardTitle>
+              <CardDescription>{t('updateYourProfile')}</CardDescription>
             </div>
             {!isEditing && (
               <Button variant="outline" onClick={() => setIsEditing(true)}>
                 <Settings className="ml-2 h-4 w-4 icon-ltr" />
-                تعديل
+                {t('edit')}
               </Button>
             )}
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">الاسم الكامل</Label>
+              <Label htmlFor="name">{t('fullName')}</Label>
               {isEditing ? (
                 <Input
                   id="name"
@@ -109,19 +111,19 @@ export default function Profile() {
             </div>
 
             <div className="space-y-2">
-              <Label>الدور</Label>
+              <Label>{t('role')}</Label>
               <div className="p-2 bg-muted rounded-md">
                 <Badge
                   variant={user.role === "admin" ? "default" : "secondary"}
                 >
                   <Shield className="h-3 w-3 ml-1 icon-ltr" />
-                  {user.role === "admin" ? "مدير" : "عضو"}
+                  {user.role === "admin" ? t('admin') : t('member')}
                 </Badge>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>عضو منذ</Label>
+              <Label>{t('memberSince')}</Label>
               <div className="p-2 bg-muted rounded-md flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground icon-ltr" />
                 {new Date(user.createdAt).toLocaleDateString("ar-EG")}
@@ -132,9 +134,9 @@ export default function Profile() {
               <>
                 <Separator />
                 <div className="flex gap-2">
-                  <Button onClick={handleSave}>حفظ التغييرات</Button>
+                  <Button onClick={handleSave}>{t('saveChanges')}</Button>
                   <Button variant="outline" onClick={handleCancel}>
-                    إلغاء
+                    {t('cancel')}
                   </Button>
                 </div>
               </>
@@ -145,22 +147,22 @@ export default function Profile() {
         {/* Stats Card */}
         <Card>
           <CardHeader>
-            <CardTitle>نشاطك</CardTitle>
-            <CardDescription>إحصائيات مهام التنظيف الخاصة بك</CardDescription>
+            <CardTitle>{t('yourActivity')}</CardTitle>
+            <CardDescription>{t('yourCleaningStats')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-accent/50 rounded-lg">
                 <div className="text-2xl font-bold text-primary">12</div>
-                <div className="text-sm text-muted-foreground">مهام مكتملة</div>
+                <div className="text-sm text-muted-foreground">{t('completedMissions')}</div>
               </div>
               <div className="text-center p-4 bg-accent/50 rounded-lg">
                 <div className="text-2xl font-bold text-blue-500">3</div>
-                <div className="text-sm text-muted-foreground">قيد التنفيذ</div>
+                <div className="text-sm text-muted-foreground">{t('inProgressMissions')}</div>
               </div>
               <div className="text-center p-4 bg-accent/50 rounded-lg">
                 <div className="text-2xl font-bold text-orange-500">5</div>
-                <div className="text-sm text-muted-foreground">في الانتظار</div>
+                <div className="text-sm text-muted-foreground">{t('pendingMissions')}</div>
               </div>
             </div>
           </CardContent>
@@ -169,20 +171,20 @@ export default function Profile() {
         {/* Security Section */}
         <Card>
           <CardHeader>
-            <CardTitle>الأمان</CardTitle>
-            <CardDescription>إدارة إعدادات أمان الحساب</CardDescription>
+            <CardTitle>{t('security')}</CardTitle>
+            <CardDescription>{t('manageAccountSecurity')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">كلمة المرور</p>
+                  <p className="font-medium">{t('password')}</p>
                   <p className="text-sm text-muted-foreground">
-                    آخر تحديث: لم يتم التحديث أبداً
+                    {t('lastUpdated')}
                   </p>
                 </div>
                 <Button variant="outline" size="sm">
-                  تغيير كلمة المرور
+                  {t('changePassword')}
                 </Button>
               </div>
             </div>

@@ -28,12 +28,10 @@ import {
   Clock,
   AlertCircle,
   ChevronLeft,
-  RefreshCcw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Room, Mission } from "@/types/api";
-import { scanAndFixCorruptedText } from "@/lib/arabic-utils";
-import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -41,69 +39,44 @@ export default function Dashboard() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
   const [newRoom, setNewRoom] = useState({ name: "" });
-  const [isFixingText, setIsFixingText] = useState(false);
+  const { t } = useTranslation();
 
-  // Mock data for now - will be replaced with API calls
   useEffect(() => {
-    setRooms([
-      {
-        id: "1",
-        name: "المطبخ",
-        description: "منطقة الطبخ وتناول الطعام الرئيسية",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        name: "غرفة المعيشة",
-        description: "مساحة تجمع العائلة",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "3",
-        name: "الحمام",
-        description: "الحمام الرئيسي",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+    const fetchData = async () => {
+      try {
+        const [roomsResponse, missionsResponse] = await Promise.all([
+          fetch("https://house-api.hasmah.xyz/api/rooms"),
+          fetch("https://house-api.hasmah.xyz/api/missions"),
+        ]);
 
-    setMissions([
-      {
-        id: "1",
-        title: "تنظيف كاونترات المطبخ",
-        description: "مسح جميع الأسطح والأجهزة",
-        sectionId: "1",
-        assignedToUserId: user?.id || "",
-        status: "pending",
-        priority: "high",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        title: "تنظيف غرفة المعيشة بالمكنسة",
-        description: "تنظيف السجاد وتحت الأثاث",
-        sectionId: "2",
-        assignedToUserId: user?.id || "",
-        status: "in_progress",
-        priority: "medium",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "3",
-        title: "ترتيب المخزن",
-        description: "ترتيب العناصر والتحقق من تواريخ الانتهاء",
-        sectionId: "1",
-        assignedToUserId: user?.id || "",
-        status: "completed",
-        priority: "low",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+        const roomsData = await roomsResponse.json();
+        const missionsData = await missionsResponse.json();
+
+        if (Array.isArray(roomsData)) {
+          setRooms(roomsData);
+        } else {
+          console.error("Fetched rooms data is not an array:", roomsData);
+          setRooms([]);
+        }
+
+        if (Array.isArray(missionsData)) {
+          const userMissions = missionsData.filter(m => m.assignedToUserId === user?.id);
+          setMissions(userMissions);
+        } else {
+          console.error("Fetched missions data is not an array:", missionsData);
+          setMissions([]);
+        }
+
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        setRooms([]);
+        setMissions([]);
+      }
+    };
+
+    if (user?.id) {
+      fetchData();
+    }
   }, [user]);
 
   const handleCreateRoom = async () => {
@@ -132,31 +105,6 @@ export default function Dashboard() {
           : m,
       ),
     );
-  };
-
-  const handleFixArabicText = () => {
-    setIsFixingText(true);
-
-    setTimeout(() => {
-      const result = scanAndFixCorruptedText();
-
-      if (result.found) {
-        toast({
-          title: "تم إصلاح النص العربي",
-          description: `تم إصلاح ${result.fixed} نص محرف بنجاح`,
-        });
-      } else {
-        toast({
-          title: "لم يتم العثور على نصوص محرفة",
-          description: "جميع النصوص العربية تبدو صحيحة",
-        });
-      }
-
-      setIsFixingText(false);
-
-      // Refresh the page to reflect server-side fixes
-      window.location.reload();
-    }, 1000);
   };
 
   const getPriorityColor = (priority: Mission["priority"]) => {
@@ -208,31 +156,12 @@ export default function Dashboard() {
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              أهلاً بك، {user?.name}!
+              {t('welcomeUser', { name: user?.name })}
             </h1>
             <p className="text-muted-foreground">
-              إليك ما يحدث مع مهام التنظيف اليوم.
+              {t('whatsHappening')}
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleFixArabicText}
-            disabled={isFixingText}
-            className="btn-with-icon"
-          >
-            {isFixingText ? (
-              <>
-                <RefreshCcw className="h-4 w-4 animate-spin icon-ltr" />
-                جارٍ الإصلاح...
-              </>
-            ) : (
-              <>
-                <RefreshCcw className="h-4 w-4 icon-ltr" />
-                إصلاح النصوص المحرفة
-              </>
-            )}
-          </Button>
         </div>
 
         {/* Stats Cards */}
@@ -240,21 +169,21 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                إجمالي المهام
+                {t('totalMissions')}
               </CardTitle>
               <AlertCircle className="h-4 w-4 text-muted-foreground icon-ltr" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalMissions}</div>
               <p className="text-xs text-muted-foreground">
-                مهام التنظيف النشطة
+                {t('activeCleaningMissions')}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">مكتملة</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('completed')}</CardTitle>
               <CheckCircle className="h-4 w-4 text-green-500 icon-ltr" />
             </CardHeader>
             <CardContent>
@@ -262,7 +191,7 @@ export default function Dashboard() {
                 {completedMissions}
               </div>
               <p className="text-xs text-muted-foreground">
-                معدل الإكمال{" "}
+                {t('completionRate')}{" "}
                 {totalMissions > 0
                   ? Math.round((completedMissions / totalMissions) * 100)
                   : 0}
@@ -273,27 +202,27 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">قيد التنفيذ</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('inProgress')}</CardTitle>
               <Clock className="h-4 w-4 text-blue-500 icon-ltr" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-500">
                 {inProgressMissions}
               </div>
-              <p className="text-xs text-muted-foreground">نشطة حالياً</p>
+              <p className="text-xs text-muted-foreground">{t('currentlyActive')}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">في الانتظار</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('pending')}</CardTitle>
               <AlertCircle className="h-4 w-4 text-orange-500 icon-ltr" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-500">
                 {pendingMissions}
               </div>
-              <p className="text-xs text-muted-foreground">في انتظار البدء</p>
+              <p className="text-xs text-muted-foreground">{t('waitingToStart')}</p>
             </CardContent>
           </Card>
         </div>
@@ -301,7 +230,7 @@ export default function Dashboard() {
         {/* Rooms Section */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-foreground">الغرف</h2>
+            <h2 className="text-2xl font-bold text-foreground">{t('rooms')}</h2>
             {user?.role === "admin" && (
               <Dialog
                 open={isCreateRoomOpen}
@@ -310,22 +239,22 @@ export default function Dashboard() {
                 <DialogTrigger asChild>
                   <Button>
                     <Plus className="ml-2 h-4 w-4 icon-ltr" />
-                    إضافة غرفة
+                    {t('addRoom')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء غرفة جديدة</DialogTitle>
+                    <DialogTitle>{t('createNewRoom')}</DialogTitle>
                     <DialogDescription>
-                      أضف غرفة جديدة لتنظيم مهام التنظيف.
+                      {t('addNewRoomDescription')}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="room-name">اسم الغرفة</Label>
+                      <Label htmlFor="room-name">{t('roomName')}</Label>
                       <Input
                         id="room-name"
-                        placeholder="مثل: المطبخ، غرفة المعيشة"
+                        placeholder={t('roomNamePlaceholder')}
                         value={newRoom.name}
                         onChange={(e) =>
                           setNewRoom({ ...newRoom, name: e.target.value })
@@ -338,13 +267,13 @@ export default function Dashboard() {
                       variant="outline"
                       onClick={() => setIsCreateRoomOpen(false)}
                     >
-                      إلغاء
+                      {t('cancel')}
                     </Button>
                     <Button
                       onClick={handleCreateRoom}
                       disabled={!newRoom.name.trim()}
                     >
-                      إنشاء الغرفة
+                      {t('createRoom')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -377,7 +306,7 @@ export default function Dashboard() {
 
         {/* Recent Missions */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-foreground">مهامك الأخيرة</h2>
+          <h2 className="text-2xl font-bold text-foreground">{t('yourRecentMissions')}</h2>
           <div className="space-y-4">
             {missions.slice(0, 5).map((mission) => (
               <Card key={mission.id}>

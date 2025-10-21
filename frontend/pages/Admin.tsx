@@ -49,15 +49,14 @@ import {
   Home,
   ArrowRight,
   Settings2,
-  Zap,
-  CheckCircle,
-  AlertTriangle,
 } from "lucide-react";
 import { User, Mission, Room, Section } from "@/types/api";
 import { Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Admin() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -77,13 +76,6 @@ export default function Admin() {
     role: "member" as "admin" | "member",
   });
 
-  // Arabic text fix states
-  const [isFixingArabicText, setIsFixingArabicText] = useState(false);
-  const [fixResults, setFixResults] = useState<{
-    totalScanned: number;
-    totalFixed: number;
-    details: string[];
-  } | null>(null);
   const [newRoom, setNewRoom] = useState({ name: "" });
   const [newSection, setNewSection] = useState({ name: "" });
   const [newMission, setNewMission] = useState({
@@ -305,136 +297,25 @@ export default function Admin() {
     return missions.filter((m) => m.sectionId === sectionId);
   };
 
-  // Arabic text corruption fix function
-  const fixArabicTextCorruption = async () => {
-    setIsFixingArabicText(true);
-    setFixResults(null);
-
-    try {
-      const results = {
-        totalScanned: 0,
-        totalFixed: 0,
-        details: [] as string[],
-      };
-
-      // Common Arabic text corruptions and their fixes
-      const arabicFixes = [
-        { corrupted: /\?+/g, fixed: "" }, // Remove question marks
-        { corrupted: /Ù\?/g, fixed: "ال" }, // Common "al" prefix
-        { corrupted: /\?\?\?/g, fixed: "المنزل" }, // House
-        { corrupted: /\?\?\?\?/g, fixed: "التنظيف" }, // Cleaning
-        { corrupted: /مدير النظام/g, fixed: "ماما" }, // Change admin name
-      ];
-
-      // Fix text in all DOM elements
-      const fixElementText = (element: Element) => {
-        if (element.nodeType === Node.TEXT_NODE) {
-          const originalText = element.textContent || "";
-          let fixedText = originalText;
-
-          arabicFixes.forEach(({ corrupted, fixed }) => {
-            if (corrupted.test(fixedText)) {
-              fixedText = fixedText.replace(corrupted, fixed);
-              results.totalFixed++;
-              results.details.push(`Fixed: "${originalText}" → "${fixedText}"`);
-            }
-          });
-
-          if (fixedText !== originalText) {
-            element.textContent = fixedText;
-          }
-          results.totalScanned++;
-        }
-
-        // Recursively check child nodes
-        element.childNodes.forEach(child => {
-          if (child.nodeType === Node.TEXT_NODE) {
-            const originalText = child.textContent || "";
-            let fixedText = originalText;
-
-            arabicFixes.forEach(({ corrupted, fixed }) => {
-              if (corrupted.test(fixedText)) {
-                fixedText = fixedText.replace(corrupted, fixed);
-                results.totalFixed++;
-                results.details.push(`Fixed: "${originalText}" → "${fixedText}"`);
-              }
-            });
-
-            if (fixedText !== originalText) {
-              child.textContent = fixedText;
-            }
-            results.totalScanned++;
-          } else if (child.nodeType === Node.ELEMENT_NODE) {
-            fixElementText(child as Element);
-          }
-        });
-      };
-
-      // Scan entire document
-      fixElementText(document.body);
-
-      // Fix localStorage data
-      Object.keys(localStorage).forEach(key => {
-        const value = localStorage.getItem(key);
-        if (value) {
-          let fixedValue = value;
-          arabicFixes.forEach(({ corrupted, fixed }) => {
-            if (corrupted.test(fixedValue)) {
-              fixedValue = fixedValue.replace(corrupted, fixed);
-              results.totalFixed++;
-              results.details.push(`Fixed localStorage "${key}"`);
-            }
-          });
-          if (fixedValue !== value) {
-            localStorage.setItem(key, fixedValue);
-          }
-          results.totalScanned++;
-        }
-      });
-
-      // Update current page data
-      setUsers(prevUsers =>
-        prevUsers.map(user => ({
-          ...user,
-          name: user.name === "مدير النظام" ? "ماما" : user.name
-        }))
-      );
-
-      // Force re-render to show changes
-      window.location.reload();
-
-      setFixResults(results);
-    } catch (error) {
-      console.error("Error fixing Arabic text:", error);
-      setFixResults({
-        totalScanned: 0,
-        totalFixed: 0,
-        details: ["Error occurred during fixing process"],
-      });
-    } finally {
-      setIsFixingArabicText(false);
-    }
-  };
-
   return (
     <DashboardLayout>
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <Shield className="h-8 w-8 text-primary icon-ltr" />
-            لوحة الإدارة
+            {t('adminPanel')}
           </h1>
           <p className="text-muted-foreground">
-            إدارة المستخدمين والغرف والأقسام والمهام
+            {t('manageUsersRooms')}
           </p>
         </div>
 
         <Tabs defaultValue="rooms" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="rooms">الغرف والأقسام</TabsTrigger>
-            <TabsTrigger value="users">المستخدمين</TabsTrigger>
-            <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
-            <TabsTrigger value="settings">الإعدادات</TabsTrigger>
+            <TabsTrigger value="rooms">{t('roomsAndSections')}</TabsTrigger>
+            <TabsTrigger value="users">{t('users')}</TabsTrigger>
+            <TabsTrigger value="overview">{t('overview')}</TabsTrigger>
+            <TabsTrigger value="settings">{t('settings')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="rooms" className="space-y-6">
@@ -442,7 +323,7 @@ export default function Admin() {
               {/* Rooms List */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold">الغرف</h2>
+                  <h2 className="text-xl font-bold">{t('rooms')}</h2>
                   <Dialog
                     open={isCreateRoomOpen}
                     onOpenChange={setIsCreateRoomOpen}
@@ -450,22 +331,22 @@ export default function Admin() {
                     <DialogTrigger asChild>
                       <Button size="sm">
                         <Plus className="ml-2 h-4 w-4 icon-ltr" />
-                        إضافة غرفة
+                        {t('addRoom')}
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>إنشاء غرفة جديدة</DialogTitle>
+                        <DialogTitle>{t('createNewRoom')}</DialogTitle>
                         <DialogDescription>
-                          أضف غرفة جديدة لتنظيم مهام التنظيف
+                          {t('addNewRoomDescription')}
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="room-name">اسم الغرفة</Label>
+                          <Label htmlFor="room-name">{t('roomName')}</Label>
                           <Input
                             id="room-name"
-                            placeholder="مثل: المطبخ، غرفة المعيشة"
+                            placeholder={t('roomNamePlaceholder')}
                             value={newRoom.name}
                             onChange={(e) =>
                               setNewRoom({ ...newRoom, name: e.target.value })
@@ -478,13 +359,13 @@ export default function Admin() {
                           variant="outline"
                           onClick={() => setIsCreateRoomOpen(false)}
                         >
-                          إلغاء
+                          {t('cancel')}
                         </Button>
                         <Button
                           onClick={handleCreateRoom}
                           disabled={!newRoom.name.trim()}
                         >
-                          إنشاء الغرفة
+                          {t('createRoom')}
                         </Button>
                       </DialogFooter>
                     </DialogContent>
@@ -514,7 +395,7 @@ export default function Admin() {
                           </div>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">
-                              {getRoomSections(room.id).length} قسم
+                              {getRoomSections(room.id).length} {t('section')}
                             </Badge>
                             {room.id !== "1" && (
                               <AlertDialog>
@@ -530,19 +411,18 @@ export default function Admin() {
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                      حذف الغرفة
+                                      {t('deleteRoom')}
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      هل أنت متأكد من حذف "{room.name}"؟ سيتم
-                                      حذف جميع الأقسام والمهام المرتبطة بها.
+                                      {t('deleteRoomConfirmation', { roomName: room.name })}
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter className="gap-2">
-                                    <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() => handleDeleteRoom(room.id)}
                                     >
-                                      حذف
+                                      {t('delete')}
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -562,7 +442,7 @@ export default function Admin() {
                   <>
                     <div className="flex items-center justify-between">
                       <h2 className="text-xl font-bold flex items-center gap-2">
-                        أقسام {selectedRoom.name}
+                        {t('sectionsOfRoom', { roomName: selectedRoom.name })}
                       </h2>
                       <Dialog
                         open={isCreateSectionOpen}
@@ -571,24 +451,24 @@ export default function Admin() {
                         <DialogTrigger asChild>
                           <Button size="sm">
                             <Plus className="ml-2 h-4 w-4 icon-ltr" />
-                            إضافة قسم
+                            {t('addSection')}
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
                             <DialogTitle>
-                              إنشاء قسم جديد في {selectedRoom.name}
+                              {t('createNewSectionIn', { roomName: selectedRoom.name })}
                             </DialogTitle>
                             <DialogDescription>
-                              أضف قسماً جديداً لتنظيم مهام التنظيف
+                              {t('addNewSectionToOrganize')}
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4">
                             <div className="space-y-2">
-                              <Label htmlFor="section-name">اسم القسم</Label>
+                              <Label htmlFor="section-name">{t('sectionName')}</Label>
                               <Input
                                 id="section-name"
-                                placeholder="مثل: الكاونترات، ��لأجهزة"
+                                placeholder={t('sectionNamePlaceholder')}
                                 value={newSection.name}
                                 onChange={(e) =>
                                   setNewSection({
@@ -604,13 +484,13 @@ export default function Admin() {
                               variant="outline"
                               onClick={() => setIsCreateSectionOpen(false)}
                             >
-                              إلغاء
+                              {t('cancel')}
                             </Button>
                             <Button
                               onClick={handleCreateSection}
                               disabled={!newSection.name.trim()}
                             >
-                              إنشاء القسم
+                              {t('createSection')}
                             </Button>
                           </DialogFooter>
                         </DialogContent>
@@ -625,7 +505,7 @@ export default function Admin() {
                               <div>
                                 <h4 className="font-medium">{section.name}</h4>
                                 <Badge variant="outline" className="mt-1">
-                                  {getSectionMissions(section.id).length} مهمة
+                                  {getSectionMissions(section.id).length} {t('mission')}
                                 </Badge>
                               </div>
                               <div className="flex items-center gap-2">
@@ -636,27 +516,26 @@ export default function Admin() {
                                   <DialogTrigger asChild>
                                     <Button size="sm" variant="outline">
                                       <Plus className="ml-2 h-4 w-4 icon-ltr" />
-                                      مهمة
+                                      {t('mission')}
                                     </Button>
                                   </DialogTrigger>
                                   <DialogContent>
                                     <DialogHeader>
                                       <DialogTitle>
-                                        إنشاء مهمة جديدة
+                                        {t('createNewMission')}
                                       </DialogTitle>
                                       <DialogDescription>
-                                        أضف مهمة تنظيف جديدة في قسم{" "}
-                                        {section.name}
+                                        {t('addNewMissionInSection', { sectionName: section.name })}
                                       </DialogDescription>
                                     </DialogHeader>
                                     <div className="space-y-4">
                                       <div className="space-y-2">
                                         <Label htmlFor="mission-title">
-                                          العنوان
+                                          {t('title')}
                                         </Label>
                                         <Input
                                           id="mission-title"
-                                          placeholder="عنوان المهمة"
+                                          placeholder={t('missionTitlePlaceholder')}
                                           value={newMission.title}
                                           onChange={(e) =>
                                             setNewMission({
@@ -670,7 +549,7 @@ export default function Admin() {
                                       <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                           <Label htmlFor="mission-user">
-                                            تعيين إلى
+                                            {t('assignTo')}
                                           </Label>
                                           <Select
                                             value={newMission.assignedToUserId}
@@ -682,7 +561,7 @@ export default function Admin() {
                                             }
                                           >
                                             <SelectTrigger>
-                                              <SelectValue placeholder="اختر مستخدم" />
+                                              <SelectValue placeholder={t('selectUser')} />
                                             </SelectTrigger>
                                             <SelectContent>
                                               {users.map((user) => (
@@ -698,7 +577,7 @@ export default function Admin() {
                                         </div>
                                         <div className="space-y-2">
                                           <Label htmlFor="mission-priority">
-                                            الأولوية
+                                            {t('priority')}
                                           </Label>
                                           <Select
                                             value={newMission.priority}
@@ -716,13 +595,13 @@ export default function Admin() {
                                             </SelectTrigger>
                                             <SelectContent>
                                               <SelectItem value="low">
-                                                منخفضة
+                                                {t('low')}
                                               </SelectItem>
                                               <SelectItem value="medium">
-                                                متوسطة
+                                                {t('medium')}
                                               </SelectItem>
                                               <SelectItem value="high">
-                                                عالية
+                                                {t('high')}
                                               </SelectItem>
                                             </SelectContent>
                                           </Select>
@@ -736,7 +615,7 @@ export default function Admin() {
                                           setIsCreateMissionOpen(false)
                                         }
                                       >
-                                        إلغاء
+                                        {t('cancel')}
                                       </Button>
                                       <Button
                                         onClick={handleCreateMission}
@@ -745,7 +624,7 @@ export default function Admin() {
                                           !newMission.assignedToUserId
                                         }
                                       >
-                                        إنشاء المهمة
+                                        {t('createMission')}
                                       </Button>
                                     </DialogFooter>
                                   </DialogContent>
@@ -759,23 +638,22 @@ export default function Admin() {
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>
-                                        حذف القسم
+                                        {t('deleteSection')}
                                       </AlertDialogTitle>
                                       <AlertDialogDescription>
-                                        هل أنت متأكد من حذف "{section.name}"؟
-                                        سيتم حذف جميع المهام المرتبطة به.
+                                        {t('deleteSectionConfirmation', { sectionName: section.name })}
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter className="gap-2">
                                       <AlertDialogCancel>
-                                        إلغاء
+                                        {t('cancel')}
                                       </AlertDialogCancel>
                                       <AlertDialogAction
                                         onClick={() =>
                                           handleDeleteSection(section.id)
                                         }
                                       >
-                                        حذف
+                                        {t('delete')}
                                       </AlertDialogAction>
                                     </AlertDialogFooter>
                                   </AlertDialogContent>
@@ -787,7 +665,7 @@ export default function Admin() {
                             {getSectionMissions(section.id).length > 0 && (
                               <div className="mt-3 space-y-2">
                                 <h5 className="text-sm font-medium text-muted-foreground">
-                                  المهام:
+                                  {t('missions')}
                                 </h5>
                                 {getSectionMissions(section.id).map(
                                   (mission) => (
@@ -824,23 +702,22 @@ export default function Admin() {
                                         <AlertDialogContent>
                                           <AlertDialogHeader>
                                             <AlertDialogTitle>
-                                              حذف المهمة
+                                              {t('deleteMission')}
                                             </AlertDialogTitle>
                                             <AlertDialogDescription>
-                                              هل أنت متأكد من حذف "
-                                              {mission.title}"؟
+                                              {t('deleteMissionConfirmation', { missionTitle: mission.title })}
                                             </AlertDialogDescription>
                                           </AlertDialogHeader>
                                           <AlertDialogFooter className="gap-2">
                                             <AlertDialogCancel>
-                                              إلغاء
+                                              {t('cancel')}
                                             </AlertDialogCancel>
                                             <AlertDialogAction
                                               onClick={() =>
                                                 handleDeleteMission(mission.id)
                                               }
                                             >
-                                              حذف
+                                              {t('delete')}
                                             </AlertDialogAction>
                                           </AlertDialogFooter>
                                         </AlertDialogContent>
@@ -859,11 +736,10 @@ export default function Admin() {
                           <CardContent className="p-8 text-center">
                             <Settings2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50 icon-ltr" />
                             <h3 className="text-lg font-medium mb-2">
-                              لا توجد أقسام
+                              {t('noSections')}
                             </h3>
                             <p className="text-muted-foreground mb-4">
-                              أنشئ أقساماً لتنظيم مهام التنظيف في{" "}
-                              {selectedRoom.name}
+                              {t('createSectionsToOrganize', { roomName: selectedRoom.name })}
                             </p>
                           </CardContent>
                         </Card>
@@ -874,9 +750,9 @@ export default function Admin() {
                   <Card>
                     <CardContent className="p-8 text-center">
                       <ArrowRight className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50 rtl-flip" />
-                      <h3 className="text-lg font-medium mb-2">اختر غرفة</h3>
+                      <h3 className="text-lg font-medium mb-2">{t('selectRoom')}</h3>
                       <p className="text-muted-foreground">
-                        انقر على غرفة من القائمة لإدارة أقسامها ومهامها
+                        {t('selectRoomToManage')}
                       </p>
                     </CardContent>
                   </Card>
@@ -888,7 +764,7 @@ export default function Admin() {
           <TabsContent value="users" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-foreground">
-                إدارة المستخدمين
+                {t('manageUsers')}
               </h2>
               <Dialog
                 open={isCreateUserOpen}
@@ -897,22 +773,22 @@ export default function Admin() {
                 <DialogTrigger asChild>
                   <Button>
                     <UserPlus className="ml-2 h-4 w-4 icon-ltr" />
-                    إضافة مستخدم
+                    {t('addUser')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء مستخدم جديد</DialogTitle>
+                    <DialogTitle>{t('createNewUser')}</DialogTitle>
                     <DialogDescription>
-                      أضف عضواً جديداً في العائلة إلى نظام إد��رة التنظيف
+                      {t('addNewFamilyMember')}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="user-name">الاسم</Label>
+                      <Label htmlFor="user-name">{t('name')}</Label>
                       <Input
                         id="user-name"
-                        placeholder="الاسم الكامل"
+                        placeholder={t('fullName')}
                         value={newUser.name}
                         onChange={(e) =>
                           setNewUser({ ...newUser, name: e.target.value })
@@ -920,11 +796,11 @@ export default function Admin() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="user-password">كلمة المرور</Label>
+                      <Label htmlFor="user-password">{t('password')}</Label>
                       <Input
                         id="user-password"
                         type="password"
-                        placeholder="كلمة المرور"
+                        placeholder={t('password')}
                         value={newUser.password}
                         onChange={(e) =>
                           setNewUser({ ...newUser, password: e.target.value })
@@ -932,7 +808,7 @@ export default function Admin() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="user-role">الدور</Label>
+                      <Label htmlFor="user-role">{t('role')}</Label>
                       <Select
                         value={newUser.role}
                         onValueChange={(value: "admin" | "member") =>
@@ -943,8 +819,8 @@ export default function Admin() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="member">عضو</SelectItem>
-                          <SelectItem value="admin">مدير</SelectItem>
+                          <SelectItem value="member">{t('member')}</SelectItem>
+                          <SelectItem value="admin">{t('admin')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -954,13 +830,13 @@ export default function Admin() {
                       variant="outline"
                       onClick={() => setIsCreateUserOpen(false)}
                     >
-                      إلغاء
+                      {t('cancel')}
                     </Button>
                     <Button
                       onClick={handleCreateUser}
                       disabled={!newUser.name || !newUser.password}
                     >
-                      إنشاء المستخدم
+                      {t('createMember')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -984,7 +860,7 @@ export default function Admin() {
                                 (m) => m.assignedToUserId === userData.id,
                               ).length
                             }{" "}
-                            مهمة مُعيّنة
+                            {t('assignedMissions')}
                           </p>
                         </div>
                       </div>
@@ -994,7 +870,7 @@ export default function Admin() {
                             userData.role === "admin" ? "default" : "secondary"
                           }
                         >
-                          {userData.role === "admin" ? "مدير" : "عضو"}
+                          {userData.role === "admin" ? t('admin') : t('member')}
                         </Badge>
                         {userData.id !== "1" && (
                           <AlertDialog>
@@ -1006,19 +882,18 @@ export default function Admin() {
                             <AlertDialogContent>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>
-                                  حذف المستخدم
+                                  {t('deleteUser')}
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  هل أنت متأكد من حذف {userData.name}؟ لا يمكن
-                                  التراجع عن هذا الإجراء.
+                                  {t('deleteUserConfirmation', { userName: userData.name })}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter className="gap-2">
-                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleDeleteUser(userData.id)}
                                 >
-                                  حذف
+                                  {t('delete')}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -1034,22 +909,21 @@ export default function Admin() {
 
           <TabsContent value="overview" className="space-y-6">
             <h2 className="text-2xl font-bold text-foreground">
-              نظرة عامة على النظام
+              {t('systemOverview')}
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    إجمالي المستخدمين
+                    {t('totalUsers')}
                   </CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground icon-ltr" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{users.length}</div>
                   <p className="text-xs text-muted-foreground">
-                    {users.filter((u) => u.role === "admin").length} مدير،{" "}
-                    {users.filter((u) => u.role === "member").length} عضو
+                    {t('adminsAndMembers', { adminCount: users.filter((u) => u.role === "admin").length, memberCount: users.filter((u) => u.role === "member").length })}
                   </p>
                 </CardContent>
               </Card>
@@ -1057,14 +931,14 @@ export default function Admin() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    إجمالي المهام
+                    {t('totalMissionsInSystem')}
                   </CardTitle>
                   <Shield className="h-4 w-4 text-muted-foreground icon-ltr" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{missions.length}</div>
                   <p className="text-xs text-muted-foreground">
-                    عبر جميع الغرف والأقسام
+                    {t('acrossAllRooms')}
                   </p>
                 </CardContent>
               </Card>
@@ -1072,14 +946,14 @@ export default function Admin() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    الغرف ��لنشطة
+                    {t('activeRooms')}
                   </CardTitle>
                   <Home className="h-4 w-4 text-muted-foreground icon-ltr" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{rooms.length}</div>
                   <p className="text-xs text-muted-foreground">
-                    {sections.length} قسم إجمالي
+                    {t('totalSections', { sectionCount: sections.length })}
                   </p>
                 </CardContent>
               </Card>
@@ -1087,7 +961,7 @@ export default function Admin() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    معدل الإكمال
+                    {t('completionRate')}
                   </CardTitle>
                   <Shield className="h-4 w-4 text-muted-foreground icon-ltr" />
                 </CardHeader>
@@ -1104,7 +978,7 @@ export default function Admin() {
                     %
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    إكمال المهام الإجمالي
+                    {t('overallCompletionRate')}
                   </p>
                 </CardContent>
               </Card>
@@ -1112,113 +986,23 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <h2 className="text-2xl font-bold text-foreground">إعدادات النظام</h2>
+            <h2 className="text-2xl font-bold text-foreground">{t('systemSettings')}</h2>
 
             <div className="grid gap-6">
-              {/* Arabic Text Fix Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-primary icon-ltr" />
-                    إصلاح النصوص العربية المُتضررة
-                  </CardTitle>
-                  <CardDescription>
-                    يقوم هذا الأداة بمسح الموقع بالكامل وإصلاح النصوص العربية المُتضررة (علامات الاستفهام "؟")
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <Button
-                      onClick={fixArabicTextCorruption}
-                      disabled={isFixingArabicText}
-                      className="flex items-center gap-2"
-                    >
-                      {isFixingArabicText ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          جارٍ الإصلاح...
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="h-4 w-4 icon-ltr" />
-                          إصلاح النصوص العربية
-                        </>
-                      )}
-                    </Button>
-
-                    {fixResults && (
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500 icon-ltr" />
-                        <span className="text-sm text-green-600">
-                          تم الإصلاح بنجاح
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {fixResults && (
-                    <div className="mt-4 p-4 bg-muted/50 rounded-lg space-y-2">
-                      <h4 className="font-medium">نتائج الإصلاح:</h4>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">العناصر المفحوصة:</span>
-                          <span className="font-medium mr-2">{fixResults.totalScanned}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">العناصر المُصلحة:</span>
-                          <span className="font-medium mr-2">{fixResults.totalFixed}</span>
-                        </div>
-                      </div>
-
-                      {fixResults.details.length > 0 && (
-                        <div className="mt-3">
-                          <h5 className="text-sm font-medium mb-2">تفاصيل الإصلاح:</h5>
-                          <div className="max-h-32 overflow-y-auto space-y-1">
-                            {fixResults.details.slice(0, 10).map((detail, index) => (
-                              <div key={index} className="text-xs text-muted-foreground bg-background p-2 rounded">
-                                {detail}
-                              </div>
-                            ))}
-                            {fixResults.details.length > 10 && (
-                              <div className="text-xs text-muted-foreground">
-                                ...و {fixResults.details.length - 10} إصلاحات أخرى
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <div className="flex items-start gap-2">
-                      <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 icon-ltr" />
-                      <div className="text-sm text-amber-800">
-                        <p className="font-medium mb-1">ملاحظة مهمة:</p>
-                        <p>
-                          سيتم إعادة تحميل الصفحة تلقائياً بعد الإصلاح لضمان ظهور التغييرات.
-                          يُنصح بعمل نسخة احتياطية قبل تشغيل هذه الأداة.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* Additional Settings Placeholder */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Settings2 className="h-5 w-5 text-primary icon-ltr" />
-                    إعدادات أخرى
+                    {t('otherSettings')}
                   </CardTitle>
                   <CardDescription>
-                    إعدادات إضافية للنظام
+                    {t('additionalSystemSettings')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    سيتم إضافة المزيد من الإعدادات هنا في المستقبل.
+                    {t('moreSettingsComing')}
                   </p>
                 </CardContent>
               </Card>
