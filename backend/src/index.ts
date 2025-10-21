@@ -1,13 +1,12 @@
 import { Hono } from 'hono'
-import { serve } from '@hono/node-server'
 import { handleDemo } from './routes/demo'
 import { handleLogin, handleGetUsers, handleCreateUser, handleDeleteUser } from './routes/auth'
 import { handleGetRooms, handleCreateRoom, handleDeleteRoom, handleGetSections, handleCreateSection, handleGetMissions, handleCreateMission, handleUpdateMission, handleDeleteMission } from './routes/cleaning'
 
-const app = new Hono()
+const app = new Hono<{ Bindings: Env }>()
 
 app.get('/api/ping', (c) => {
-  const ping = process.env.PING_MESSAGE ?? 'ping'
+  const ping = c.env.PING_MESSAGE
   return c.json({ message: ping })
 })
 
@@ -30,6 +29,4 @@ app.post('/api/missions', handleCreateMission)
 app.put('/api/missions/:missionId', handleUpdateMission)
 app.delete('/api/missions/:missionId', handleDeleteMission)
 
-serve(app, () => {
-  console.log('Server is running on http://localhost:3000')
-})
+export default app

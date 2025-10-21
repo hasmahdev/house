@@ -1,0 +1,6 @@
+name = "clean-house-backend"
+main = "src/index.ts"
+compatibility_date = "2024-07-26"
+
+[vars]
+PING_MESSAGE = "pong"
