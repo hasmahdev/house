@@ -1,9 +1,9 @@
-import { RequestHandler } from "express";
-import { DemoResponse } from "@shared/api";
+import { Context } from 'hono'
+import { DemoResponse } from '../api'
 
-export const handleDemo: RequestHandler = (req, res) => {
+export const handleDemo = (c: Context) => {
   const response: DemoResponse = {
-    message: "Hello from Express server",
-  };
-  res.status(200).json(response);
-};
+    message: 'Hello from Hono server',
+  }
+  return c.json(response)
+}
