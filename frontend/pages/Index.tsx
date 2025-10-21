@@ -1,17 +1,15 @@
-import { DemoResponse } from "@shared/api";
+import { DemoResponse } from "@/types/api";
 import { useEffect, useState } from "react";
 
 export default function Index() {
   const [exampleFromServer, setExampleFromServer] = useState("");
-  // Fetch users on component mount
   useEffect(() => {
     fetchDemo();
   }, []);
 
-  // Example of how to fetch data from the server (if needed)
   const fetchDemo = async () => {
     try {
-      const response = await fetch("/api/demo");
+      const response = await fetch("http://localhost:3000/api/demo");
       const data = (await response.json()) as DemoResponse;
       setExampleFromServer(data.message);
     } catch (error) {
@@ -22,7 +20,6 @@ export default function Index() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
       <div className="text-center">
-        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
         <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
           <svg
             className="animate-spin h-8 w-8 text-slate-400"

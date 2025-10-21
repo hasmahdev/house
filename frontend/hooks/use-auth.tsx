@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { User, LoginRequest, LoginResponse } from "@shared/api";
+import { User, LoginRequest, LoginResponse } from "@/types/api";
 
 interface AuthContextType {
   user: User | null;
@@ -15,7 +15,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing auth token on mount
     const token = localStorage.getItem("auth_token");
     const userData = localStorage.getItem("user_data");
 
@@ -33,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (credentials: LoginRequest) => {
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

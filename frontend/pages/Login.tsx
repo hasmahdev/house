@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, Home, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { User } from "@shared/api";
+import { User } from "@/types/api";
 
 export default function Login() {
   const [selectedUserId, setSelectedUserId] = useState("");
@@ -42,25 +42,14 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Fetch available users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("/api/users");
+        const response = await fetch("http://localhost:3000/api/users");
         const userData = await response.json();
         setUsers(userData);
       } catch (error) {
         console.error("Error fetching users:", error);
-        // Fallback to default admin user
-        setUsers([
-          {
-            id: "1",
-            name: "مدير النظام",
-            role: "admin",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ]);
       }
     };
 
@@ -78,7 +67,7 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("http://localhost:3000/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

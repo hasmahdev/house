@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -34,13 +33,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Plus,
   ArrowRight,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  Users,
   Home,
+  AlertCircle
 } from "lucide-react";
-import { Room as RoomType, Section, Mission, User } from "@shared/api";
+import { Room as RoomType, Section, Mission, User } from "@/types/api";
 
 export default function Room() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -51,7 +47,6 @@ export default function Room() {
   const [users, setUsers] = useState<User[]>([]);
   const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false);
   const [isCreateMissionOpen, setIsCreateMissionOpen] = useState(false);
-  const [selectedSectionId, setSelectedSectionId] = useState<string>("");
   const [newSection, setNewSection] = useState({ name: "" });
   const [newMission, setNewMission] = useState({
     title: "",
@@ -60,101 +55,43 @@ export default function Room() {
     priority: "medium" as "low" | "medium" | "high",
   });
 
-  // Mock data - in production, these would be API calls
   useEffect(() => {
-    // Mock room data
-    setRoom({
-      id: roomId || "1",
-      name: "المطبخ",
-      description: "منطقة الطبخ وتناول الطعام الرئيسية",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    setSections([
-      {
-        id: "1",
-        name: "الكاونترات",
-        description: "أسطح المطبخ",
-        roomId: roomId || "1",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        name: "الأجهزة",
-        description: "أجهزة المطبخ",
-        roomId: roomId || "1",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "3",
-        name: "الحو�� والأطباق",
-        description: "منطقة الحوض وغسل الأطباق",
-        roomId: roomId || "1",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
-
-    setMissions([
-      {
-        id: "1",
-        title: "تنظيف كاونترات المطبخ",
-        description: "مسح جميع الأسطح والأجهزة",
-        sectionId: "1",
-        assignedToUserId: "2",
-        status: "pending",
-        priority: "high",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        title: "تحميل غسالة الأطباق",
-        description: "وضع الأطباق المتسخة وتشغيل الدورة",
-        sectionId: "3",
-        assignedToUserId: "2",
-        status: "in_progress",
-        priority: "medium",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "3",
-        title: "تنظيف الميكروويف",
-        description: "تنظيف الجهة الداخلية والخارجية للميكروويف",
-        sectionId: "2",
-        assignedToUserId: "3",
-        status: "completed",
-        priority: "low",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
-
-    setUsers([
-      {
-        id: "2",
-        name: "عضو العائلة",
-        role: "member",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "3",
-        name: "أحمد محمد",
-        role: "member",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ]);
+    fetchRoomData();
+    fetchUsers();
   }, [roomId]);
+
+  const fetchRoomData = async () => {
+    try {
+      const roomResponse = await fetch(`http://localhost:3000/api/rooms/${roomId}`);
+      const roomData = await roomResponse.json();
+      setRoom(roomData);
+
+      const sectionsResponse = await fetch(`http://localhost:3000/api/rooms/${roomId}/sections`);
+      const sectionsData = await sectionsResponse.json();
+      setSections(sectionsData);
+
+      const missionsResponse = await fetch(`http://localhost:3000/api/missions`);
+      const missionsData = await missionsResponse.json();
+      setMissions(missionsData);
+    } catch (error) {
+      console.error("Error fetching room data:", error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/users");
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
 
   const handleCreateSection = async () => {
     try {
-      const response = await fetch("/api/sections", {
+      const response = await fetch("http://localhost:3000/api/sections", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,23 +112,12 @@ export default function Room() {
       setIsCreateSectionOpen(false);
     } catch (error) {
       console.error("Error creating section:", error);
-      // Fallback to local creation if API fails
-      const section: Section = {
-        id: Date.now().toString(),
-        name: newSection.name,
-        roomId: roomId || "1",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setSections([...sections, section]);
-      setNewSection({ name: "" });
-      setIsCreateSectionOpen(false);
     }
   };
 
   const handleCreateMission = async () => {
     try {
-      const response = await fetch("/api/missions", {
+      const response = await fetch("http://localhost:3000/api/missions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -219,25 +145,6 @@ export default function Room() {
       setIsCreateMissionOpen(false);
     } catch (error) {
       console.error("Error creating mission:", error);
-      // Fallback to local creation if API fails
-      const mission: Mission = {
-        id: Date.now().toString(),
-        title: newMission.title,
-        sectionId: newMission.sectionId,
-        assignedToUserId: newMission.assignedToUserId,
-        status: "pending",
-        priority: newMission.priority,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setMissions([...missions, mission]);
-      setNewMission({
-        title: "",
-        sectionId: "",
-        assignedToUserId: "",
-        priority: "medium",
-      });
-      setIsCreateMissionOpen(false);
     }
   };
 
@@ -297,12 +204,11 @@ export default function Room() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <Link to="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowRight className="h-4 w-4 ml-2 rtl-flip" />
-              ال��ودة للرئيسية
+              العودة للرئيسية
             </Button>
           </Link>
           <div className="flex items-center gap-3">
@@ -320,7 +226,6 @@ export default function Room() {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-4 flex-wrap">
           {user?.role === "admin" && (
             <>
@@ -336,7 +241,7 @@ export default function Room() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>إنشاء ��سم جديد</DialogTitle>
+                    <DialogTitle>إنشاء قسم جديد</DialogTitle>
                     <DialogDescription>
                       أضف قسماً جديداً لتنظيم مهام التنظيف في {room.name}.
                     </DialogDescription>
@@ -436,7 +341,7 @@ export default function Room() {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="اختر ��ستخدم" />
+                            <SelectValue placeholder="اختر مستخدم" />
                           </SelectTrigger>
                           <SelectContent>
                             {user?.role === "admin" && (
@@ -465,7 +370,7 @@ export default function Room() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="low">من��فضة</SelectItem>
+                          <SelectItem value="low">منخفضة</SelectItem>
                           <SelectItem value="medium">متوسطة</SelectItem>
                           <SelectItem value="high">عالية</SelectItem>
                         </SelectContent>
@@ -496,7 +401,6 @@ export default function Room() {
           )}
         </div>
 
-        {/* Sections and Missions */}
         <div className="space-y-6">
           {sections.map((section) => {
             const sectionMissions = getMissionsForSection(section.id);
@@ -516,7 +420,7 @@ export default function Room() {
                   {sectionMissions.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50 icon-ltr" />
-                      <p>لا توجد مهام في هذا القسم ب��د</p>
+                      <p>لا توجد مهام في هذا القسم بعد</p>
                       <p className="text-sm">أضف مهمة للبدء</p>
                     </div>
                   ) : (
@@ -551,7 +455,6 @@ export default function Room() {
                                   </h4>
                                   <div className="flex items-center gap-2 mt-1">
                                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                      <Users className="h-3 w-3 icon-ltr" />
                                       {getUserName(mission.assignedToUserId)}
                                     </div>
                                   </div>
