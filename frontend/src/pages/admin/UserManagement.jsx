@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import api, { classService, adminService } from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import { Plus, Edit, Trash2, Loader2, ChevronDown, Users, Shield, BookCopy } from 'lucide-react';
-import { logoUrl } from '../../data/site.js';
 import Modal from '../../components/Modal';
 import StudentCard from './StudentCard';
 import AdminCard from './AdminCard';

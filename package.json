@@ -13,5 +13,9 @@
   "workspaces": [
     "frontend",
     "backend"
-  ]
+  ],
+  "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "react-ga4": "^2.1.0"
+  }
 }
