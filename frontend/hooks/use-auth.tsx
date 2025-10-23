@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (credentials: LoginRequest) => {
     try {
-      const response = await fetch("https://house-api.hasmah.xyz/api/auth/login", {
+      const response = await fetch("https://apis.ghars.site/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
