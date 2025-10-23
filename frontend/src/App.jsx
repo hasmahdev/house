@@ -80,7 +80,7 @@ const App = () => {
         </Route>
 
         {/* Protected Routes for Admin */}
-        <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']} />}>
+        <Route path="/admin/*" element={<ProtectedRoute allowedRoles={['admin']} />}>
           <Route element={<AdminLayout />}>
             <Route index element={<AdminIndexRedirect />} />
             <Route path="users" element={<UserManagement />} />
